@@ -9,14 +9,13 @@ namespace DotLink.Domain.Entities
 {
      public class User
     {
-        public int Id { get; init; }
+        public Guid Id { get; init; }
         public string Username { get; private set; } = String.Empty;
         public string Email { get; private set; } = String.Empty;
         public string PasswordHash { get; private set; } = String.Empty;
 
         public ICollection<Post> Posts { get; private set; } = new List<Post>();
         public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
-        // Если вы реализуете лайки/голоса
         public ICollection<PostVote> Votes { get; private set; } = new List<PostVote>();
 
         private User() { }
@@ -40,7 +39,7 @@ namespace DotLink.Domain.Entities
         }
 
 
-        public DateTime CreatedAt { get; init; }
+        public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; private set; }
     }
 }
