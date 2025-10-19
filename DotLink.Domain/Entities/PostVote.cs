@@ -8,7 +8,6 @@ namespace DotLink.Domain.Entities
 {
     public class PostVote
     {
-        public Guid Id { get; init; }
         public Guid PostId { get; private set; }
         public Post? Post { get; private set; } = null!;
         public Guid UserId { get; private set; }
