@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using BCrypt.Net;
 
 namespace DotLink.Domain.Entities
 {
@@ -19,8 +20,9 @@ namespace DotLink.Domain.Entities
         public ICollection<PostVote> Votes { get; private set; } = new List<PostVote>();
 
         private User() { }
-        public User(string username, string email, string passwordHash)
+        public User(Guid id, string username, string email, string passwordHash)
         {
+            Id = id;
             Username = username;
             Email = email;
             PasswordHash = passwordHash;
@@ -36,6 +38,16 @@ namespace DotLink.Domain.Entities
             }
             Username = newUsername;
             UpdatedAt = DateTime.UtcNow;
+        }
+
+        public bool VerifyPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.Verify(password, this.PasswordHash);
+        }
+
+        public static string HashPassword(string password)
+        {
+            return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
 
