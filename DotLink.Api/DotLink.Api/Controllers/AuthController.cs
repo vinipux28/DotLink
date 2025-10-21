@@ -37,5 +37,25 @@ namespace DotLink.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                string token = await _mediator.Send(command);
+
+                return Ok(new { token = token });
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(new { error = ex.Message });
+            }
+        }
+
     }
 }
