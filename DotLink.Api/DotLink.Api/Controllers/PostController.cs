@@ -2,6 +2,8 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using DotLink.Application.Queries.PostQueries;
+using DotLink.Application.Commands.PostCommands;
 
 namespace DotLink.Api.Controllers
 {
@@ -15,6 +17,13 @@ namespace DotLink.Api.Controllers
         public PostController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPostById(Guid id)
+        {
+            // This method is a placeholder for CreatedAtAction to reference.
+            return Ok();
         }
 
         [HttpPost]
@@ -33,10 +42,12 @@ namespace DotLink.Api.Controllers
             return CreatedAtAction(nameof(GetPostById), new { id = postId }, new { PostId = postId });
         }
 
-        /*[HttpGet("{id}")]
-        public IActionResult GetPostById(Guid id)
+        [HttpGet("/recent")]
+        public async Task<IActionResult> GetRecentPosts([FromQuery] GetRecentPostsQuery query)
         {
-            
-        }*/
+            var posts = await _mediator.Send(query);
+
+            return Ok(posts);
+        }
     }
 }
