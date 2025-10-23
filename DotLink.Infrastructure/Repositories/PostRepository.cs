@@ -58,7 +58,8 @@ namespace DotLink.Infrastructure.Repositories
                                  .Include(p => p.Author)
                                  .OrderByDescending(p => p.CreatedAt)
                                  .Skip(skip)    
-                                 .Take(take)            
+                                 .Take(take)
+                                 .AsNoTracking() // read-only optimization
                                  .ToListAsync();                
         }
 

@@ -18,8 +18,9 @@ namespace DotLink.Domain.Entities
 
         private Post() { }
 
-        public Post(string title, string content, Guid authorId)
+        public Post(Guid id, Guid authorId, string title, string content)
         {
+            Id = id;
             Title = title;
             Content = content;
             AuthorId = authorId;
