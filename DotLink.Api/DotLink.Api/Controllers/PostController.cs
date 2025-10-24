@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using DotLink.Application.Queries.PostQueries;
 using DotLink.Application.Commands.PostCommands;
+using DotLink.Application.DTOs;
 
 namespace DotLink.Api.Controllers
 {
@@ -20,10 +21,11 @@ namespace DotLink.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPostById(Guid id)
+        public async Task<IActionResult> GetPostById([FromQuery] GetPostByIdQuery query)
         {
-            // This method is a placeholder for CreatedAtAction to reference.
-            return Ok();
+            return await _mediator.Send(query) is PostDTO post
+                ? Ok(post)
+                : NotFound();
         }
 
         [HttpPost]

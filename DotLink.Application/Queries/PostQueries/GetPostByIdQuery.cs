@@ -13,9 +13,5 @@ namespace DotLink.Application.Queries.PostQueries
     {
         public Guid PostId { get; set; }
 
-        public GetPostByIdQuery(Guid postId)
-        {
-            PostId = postId;
-        }
     }
 }
