@@ -37,7 +37,7 @@ namespace DotLink.Api.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
         {
             if (!ModelState.IsValid)
