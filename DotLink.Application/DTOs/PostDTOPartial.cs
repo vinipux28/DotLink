@@ -2,7 +2,7 @@
 
 namespace DotLink.Application.DTOs
 {
-    public class PostDTO
+    public class PostDTOPartial
     {
         public Guid Id { get; set; }
         public string Title { get; set; }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DotLink.Application.Queries.PostQueries
 {
-    public class GetRecentPostsQuery : IRequest<IEnumerable<PostDTO>>
+    public class GetRecentPostsQuery : IRequest<IEnumerable<PostDTOPartial>>
     {
         private const int MaxPageSize = 50;
 
