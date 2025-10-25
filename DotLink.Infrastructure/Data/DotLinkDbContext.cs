@@ -18,7 +18,7 @@ namespace DotLink.Infrastructure.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<PostVote> Votes { get; set; }
+        public DbSet<PostVote> PostVotes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,7 +45,7 @@ namespace DotLink.Infrastructure.Data
 
             modelBuilder.Entity<Post>(entity =>
             {
-                entity.HasMany(p => p.Votes)
+                entity.HasMany(p => p.PostVotes)
                       .WithOne(v => v.Post)
                       .HasForeignKey(v => v.PostId)
                       .OnDelete(DeleteBehavior.Cascade);

@@ -14,7 +14,7 @@ namespace DotLink.Domain.Entities
         public Guid AuthorId { get; private set; }
         public User? Author { get; private set; } = null!;
         public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
-        public ICollection<PostVote> Votes { get; private set; } = new List<PostVote>();
+        public ICollection<PostVote> PostVotes { get; private set; } = new List<PostVote>();
 
         private Post() { }
 

@@ -26,8 +26,8 @@ namespace DotLink.Application.DTOs
             Content = post.Content;
             CreatedAt = post.CreatedAt;
             Author = new UserDTO(post.Author);
-            UpVotes = post.Votes.Count(v => v.IsUpvote);
-            DownVotes = post.Votes.Count(v => !v.IsUpvote);
+            UpVotes = post.PostVotes.Count(v => v.IsUpvote);
+            DownVotes = post.PostVotes.Count(v => !v.IsUpvote);
         }
     }
 }

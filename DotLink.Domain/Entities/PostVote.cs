@@ -20,9 +20,14 @@ namespace DotLink.Domain.Entities
             UserId = userId;
             IsUpvote = isUpvote;
         }
-        public void ChangeVote(bool isUpvote)
+
+        public void SetIsUpvote(bool isUpvote)
         {
             IsUpvote = isUpvote;
+            UpdatedAt = DateTime.UtcNow;
         }
+
+        public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; private set; }
     }
 }
