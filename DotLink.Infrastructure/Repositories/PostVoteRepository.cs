@@ -37,5 +37,11 @@ namespace DotLink.Infrastructure.Repositories
 
             await _context.SaveChangesAsync();
         }
+
+        public Task RemoveVoteAsync(PostVote vote)
+        {
+            _context.PostVotes.Remove(vote);
+            return _context.SaveChangesAsync();
+        }
     }
 }

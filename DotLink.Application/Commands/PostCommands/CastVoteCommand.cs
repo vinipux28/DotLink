@@ -7,6 +7,6 @@ namespace DotLink.Application.Commands.PostCommands
     {
         public Guid UserId { get; set; }
         public Guid PostId { get; set; }
-        public bool IsUpvote { get; set; }
+        public bool? IsUpvote { get; set; }
     }
 }

@@ -7,5 +7,6 @@ namespace DotLink.Application.Repositories
     {
         Task CastVoteAsync(PostVote vote);
         Task<PostVote?> GetVoteAsync(Guid userId, Guid postId);
+        Task RemoveVoteAsync(PostVote vote);
     }
 }
