@@ -28,9 +28,9 @@ namespace DotLink.Application.Commands.CommentCommands
 
             var newComment = new Comment(
                 Guid.NewGuid(),
-                request.PostId,
+                request.Content,
                 request.UserId,
-                request.Content
+                request.PostId
             );
 
             await _commentRepository.AddAsync(newComment);
