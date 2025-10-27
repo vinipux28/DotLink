@@ -15,8 +15,6 @@ namespace DotLink.Application.Repositories
 
         Task DeleteAsync(Post post);
 
-        Task<Post?> GetPostWithDetailsAsync(Guid postId);
-
         Task<IEnumerable<Post>> GetRecentPostsAsync(int skip, int take);
     }
 }

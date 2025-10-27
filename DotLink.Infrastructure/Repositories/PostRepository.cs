@@ -53,14 +53,6 @@ namespace DotLink.Infrastructure.Repositories
             return _context.SaveChangesAsync();
         }
 
-        public Task<Post?> GetPostWithDetailsAsync(Guid postId)
-        {
-            return _context.Posts.Include(p => p.Author)
-                                 .Include(p => p.Comments)
-                                 .Include(p => p.PostVotes)
-                                 .FirstOrDefaultAsync(p => p.Id == postId);
-        }
-
         public async Task<IEnumerable<Post>> GetRecentPostsAsync(int skip, int take)
         {
             return await _context.Posts
