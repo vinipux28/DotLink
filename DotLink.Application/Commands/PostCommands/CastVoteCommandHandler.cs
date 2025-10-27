@@ -26,10 +26,18 @@ namespace DotLink.Application.Commands.PostCommands
                 throw new Exception($"Post with ID {request.PostId} not found.");
             }
 
+            if (request.IsUpvote is null)
+            {
+                await _voteRepository.RemoveVoteAsync(
+                    new PostVote(request.PostId, request.UserId, true)
+                );
+                return Unit.Value;
+            }
+
             var vote = new PostVote(
                 request.PostId,
                 request.UserId,
-                request.IsUpvote
+                (bool)request.IsUpvote
             );
 
             await _voteRepository.CastVoteAsync(vote);
