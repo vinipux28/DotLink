@@ -50,6 +50,7 @@ builder.Services.AddDbContext<DotLinkDbContext>(options =>
 
 builder.Services.AddScoped<IPostRepository, PostRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPostVoteRepository, PostVoteRepository>();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IPostRepository).Assembly));
 

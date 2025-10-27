@@ -47,8 +47,9 @@ namespace DotLink.Infrastructure.Repositories
 
         public Task<Post?> GetPostWithDetailsAsync(Guid postId)
         {
-            return _context.Posts.Include(p => p.Comments)
-                                 .Include(p => p.Votes)
+            return _context.Posts.Include(p => p.Author)
+                                 .Include(p => p.Comments)
+                                 .Include(p => p.PostVotes)
                                  .FirstOrDefaultAsync(p => p.Id == postId);
         }
 
