@@ -21,12 +21,20 @@ namespace DotLink.Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetPostById([FromQuery] GetPostByIdQuery query)
+        [HttpGet("{postId:guid}")]
+        public async Task<IActionResult> GetPostById(Guid postId, [FromQuery] GetPostByIdQuery query)
         {
-            return await _mediator.Send(query) is PostDTO post
-                ? Ok(post)
-                : NotFound();
+            query.PostId = postId;
+
+            try
+            {
+                var post = await _mediator.Send(query);
+                return Ok(post);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { error = ex.Message });
+            }
         }
 
         [HttpPost]
