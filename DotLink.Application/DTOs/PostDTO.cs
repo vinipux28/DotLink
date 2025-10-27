@@ -18,6 +18,8 @@ namespace DotLink.Application.DTOs
         public int UpVotes { get; set; }
         public int DownVotes { get; set; }
 
+        public List<CommentDTO> Comments { get; set; } = new List<CommentDTO>();
+
 
         public PostDTO(Post post)
         {
@@ -28,6 +30,7 @@ namespace DotLink.Application.DTOs
             Author = new UserDTO(post.Author);
             UpVotes = post.PostVotes.Count(v => v.IsUpvote);
             DownVotes = post.PostVotes.Count(v => !v.IsUpvote);
+            Comments = post.Comments.Select(c => new CommentDTO(c)).ToList();
         }
     }
 }
