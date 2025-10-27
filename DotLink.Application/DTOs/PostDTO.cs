@@ -18,6 +18,8 @@ namespace DotLink.Application.DTOs
         public int UpVotes { get; set; }
         public int DownVotes { get; set; }
 
+        public List<CommentDTO> Comments { get; set; } = new List<CommentDTO>();
+
 
         public PostDTO(Post post)
         {

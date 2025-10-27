@@ -7,6 +7,6 @@ namespace DotLink.Application.DTOs
         public Guid Id { get; set; }
         public string Content { get; set; }
         public DateTime CreatedAt { get; set; }
-        public string AuthorUsername { get; set; }
+        public UserDTO Author { get; set; }
     }
 }
