@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using DotLink.Application.PipelineBehaviors;
 using FluentValidation;
+using DotLink.Application.Commands.UserCommands;
+using DotLink.Api.Filters;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,9 +58,18 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostVoteRepository, PostVoteRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IPostRepository).Assembly));
 
-builder.Services.AddControllers();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IPostRepository).Assembly));
+builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserCommand).Assembly);
+
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationExceptionFilter>();
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
