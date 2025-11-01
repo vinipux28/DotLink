@@ -60,7 +60,9 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IPostRepository).Assembly));
+
 builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserCommand).Assembly);
+
 
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 

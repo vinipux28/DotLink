@@ -12,6 +12,7 @@ namespace DotLink.Application.Commands.CommentCommands
 
             RuleFor(x => x.Content)
                 .NotEmpty().WithMessage("Content can not be blank.")
+                .MinimumLength(1).WithMessage("Content has to have minimum length of 1 character.")
                 .MaximumLength(2000).WithMessage("Content has to have maximum length of 2000 characters.");
         }
     }
