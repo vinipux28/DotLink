@@ -26,12 +26,26 @@ namespace DotLink.Application.Features.Comments.CreateComment
                 throw new Exception($"Post with ID {request.PostId} not found.");
             }
 
+            if (request.ParentCommentId.HasValue)
+            {
+                var parentComment = await _commentRepository.GetByIdAsync(request.ParentCommentId.Value);
+                if (parentComment is null)
+                {
+                    throw new Exception($"Parent comment with ID {request.ParentCommentId.Value} not found.");
+                }
+
+                if (parentComment.PostId != request.PostId)
+                {
+                    throw new Exception("Cannot reply to a comment that belongs to a different post.");
+                }
+            }
 
             var newComment = new Comment(
                 Guid.NewGuid(),
                 request.Content,
                 request.UserId,
-                request.PostId
+                request.PostId,
+                request.ParentCommentId
             );
 
             await _commentRepository.AddAsync(newComment);
