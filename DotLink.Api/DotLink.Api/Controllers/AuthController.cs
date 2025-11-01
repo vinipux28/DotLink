@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MediatR;
-using DotLink.Application.Commands.UserCommands;
+using DotLink.Application.Features.Users.RegisterUser;
+using DotLink.Application.Features.Users.LoginUser;
 using System.Threading.Tasks;
 
 namespace DotLink.Api.Controllers

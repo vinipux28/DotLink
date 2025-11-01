@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using DotLink.Application.PipelineBehaviors;
 using FluentValidation;
-using DotLink.Application.Commands.UserCommands;
+using DotLink.Application.Features.Users.RegisterUser;
 using DotLink.Api.Filters;
 using MediatR;
 
