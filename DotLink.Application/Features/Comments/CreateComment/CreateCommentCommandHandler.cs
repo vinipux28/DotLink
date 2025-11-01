@@ -21,10 +21,11 @@ namespace DotLink.Application.Features.Comments.CreateComment
         public async Task<Guid> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
         {
             var postExists = await _postRepository.GetByIdAsync(request.PostId);
-            if (postExists == null)
+            if (postExists is null)
             {
                 throw new Exception($"Post with ID {request.PostId} not found.");
             }
+
 
             var newComment = new Comment(
                 Guid.NewGuid(),
