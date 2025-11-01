@@ -111,5 +111,32 @@ namespace DotLink.Api.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+
+        [Authorize]
+        [HttpPut("{postId:guid}")]
+        public async Task<IActionResult> UpdatePost(Guid postId, [FromBody] UpdatePostCommand command)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+
+            command.PostId = postId;
+            command.UserId = userId;
+
+            try
+            {
+                await _mediator.Send(command);
+                return NoContent();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid();
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("not found")) return NotFound(new { error = ex.Message });
+                return BadRequest(new { error = ex.Message });
+            }
+        }
     }
 }
