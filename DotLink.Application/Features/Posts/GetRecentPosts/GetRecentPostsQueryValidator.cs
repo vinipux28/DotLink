@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace DotLink.Application.Queries.PostQueries
+namespace DotLink.Application.Features.Posts.GetRecentPosts
 {
     public class GetRecentPostsQueryValidator : AbstractValidator<GetRecentPostsQuery>
     {

@@ -2,7 +2,7 @@
 using DotLink.Application.DTOs;
 using System.Collections.Generic;
 
-namespace DotLink.Application.Queries.PostQueries
+namespace DotLink.Application.Features.Posts.GetRecentPosts
 {
     public class GetRecentPostsQuery : IRequest<IEnumerable<PostDTOPartial>>
     {

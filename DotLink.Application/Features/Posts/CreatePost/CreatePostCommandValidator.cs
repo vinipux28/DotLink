@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace DotLink.Application.Commands.PostCommands
+namespace DotLink.Application.Features.Posts.CreatePost
 {
     public class CreatePostCommandValidator : AbstractValidator<CreatePostCommand>
     {

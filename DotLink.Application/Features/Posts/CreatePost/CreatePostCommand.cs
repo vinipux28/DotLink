@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System;
 
-namespace DotLink.Application.Commands.PostCommands
+namespace DotLink.Application.Features.Posts.CreatePost
 {
     public class CreatePostCommand : IRequest<Guid>
     {

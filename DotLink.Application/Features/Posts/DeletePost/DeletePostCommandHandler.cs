@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotLink.Application.Commands.PostCommands
+namespace DotLink.Application.Features.Posts.DeletePost
 {
     public class DeletePostCommandHandler : IRequestHandler<DeletePostCommand, Unit>
     {

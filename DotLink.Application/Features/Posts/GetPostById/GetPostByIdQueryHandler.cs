@@ -7,7 +7,7 @@ using MediatR;
 using DotLink.Application.DTOs;
 using DotLink.Application.Repositories;
 
-namespace DotLink.Application.Queries.PostQueries
+namespace DotLink.Application.Features.Posts.GetPostById
 {
     public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, PostDTO>
     {

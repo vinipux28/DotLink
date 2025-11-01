@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
 
-namespace DotLink.Application.Commands.PostCommands
+namespace DotLink.Application.Features.Posts.CastVote
 {
     public class CastVoteCommandValidator : AbstractValidator<CastVoteCommand>
     {

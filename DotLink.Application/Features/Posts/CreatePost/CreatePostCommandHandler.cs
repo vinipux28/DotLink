@@ -4,7 +4,7 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotLink.Application.Commands.PostCommands
+namespace DotLink.Application.Features.Posts.CreatePost
 {
     public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, Guid>
     {

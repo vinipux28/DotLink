@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using System;
 
-namespace DotLink.Application.Queries.PostQueries
+namespace DotLink.Application.Features.Posts.GetPostById
 {
     public class GetPostByIdQueryValidator : AbstractValidator<GetPostByIdQuery>
     {
