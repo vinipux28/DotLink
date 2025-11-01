@@ -10,17 +10,25 @@ namespace DotLink.Domain.Entities
     {
         public Guid Id { get; init; }
         public string Content { get; private set; } = String.Empty;
+
         public Guid AuthorId { get; private set; }
         public User? Author { get; private set; } = null!;
+
         public Guid PostId { get; private set; }
         public Post? Post { get; private set; } = null!;
+
+        public Guid? ParentCommentId { get; private set; }
+        public Comment? ParentComment { get; private set; }
+        public ICollection<Comment> Replies { get; private set; } = new List<Comment>();
+
         private Comment() { }
-        public Comment(Guid id, string content, Guid authorId, Guid postId)
+        public Comment(Guid id, string content, Guid authorId, Guid postId, Guid? parentCommentId = null)
         {
             Id = id;
             Content = content;
             AuthorId = authorId;
             PostId = postId;
+            ParentCommentId = parentCommentId;
         }
         public void UpdateContent(string newContent)
         {
