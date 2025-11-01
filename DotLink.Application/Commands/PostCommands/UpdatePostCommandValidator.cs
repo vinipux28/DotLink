@@ -11,10 +11,12 @@ namespace DotLink.Application.Commands.PostCommands
 
             RuleFor(x => x.Title)
                 .NotEmpty().WithMessage("Post title is required.")
-                .MaximumLength(255).WithMessage("Title has to have maximum length of 22 characters.");
+                .MinimumLength(1).WithMessage("Title has to have minimum length of 1 character.")
+                .MaximumLength(255).WithMessage("Title has to have maximum length of 255 characters.");
 
             RuleFor(x => x.Content)
-                .NotEmpty().WithMessage("Post content is required.");
+                .NotEmpty().WithMessage("Post content is required.")
+                .MinimumLength(1).WithMessage("Content has to have minimum length of 1 character.");
         }
     }
 }

@@ -15,7 +15,8 @@ namespace DotLink.Application.Commands.UserCommands
                 .MinimumLength(8).WithMessage("Password has to have minimum length of 8 characters.");
 
             RuleFor(x => x.Username)
-                .NotEmpty().WithMessage("Username is required.");
+                .NotEmpty().WithMessage("Username is required.")
+                .MinimumLength(1).WithMessage("Username has to have minimum length of 1 character.");
         }
     }
 }
