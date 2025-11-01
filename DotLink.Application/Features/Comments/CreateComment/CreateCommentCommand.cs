@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace DotLink.Application.Commands.CommentCommands
+namespace DotLink.Application.Features.Comments.CreateComment
 {
     public class CreateCommentCommand : IRequest<Guid>
     {

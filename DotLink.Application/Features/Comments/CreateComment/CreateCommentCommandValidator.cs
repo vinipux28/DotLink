@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using System;
 
-namespace DotLink.Application.Commands.CommentCommands
+namespace DotLink.Application.Features.Comments.CreateComment
 {
     public class CreateCommentCommandValidator : AbstractValidator<CreateCommentCommand>
     {
