@@ -9,6 +9,7 @@ namespace DotLink.Application.Repositories
 {
     public interface ICommentRepository
     {
+        public Task<Comment?> GetByIdAsync(Guid id);
         public Task AddAsync(Comment comment);
     }
 }

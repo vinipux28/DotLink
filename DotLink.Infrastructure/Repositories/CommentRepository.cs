@@ -17,6 +17,11 @@ namespace DotLink.Infrastructure.Repositories
             _context = context;
         }
 
+        public async Task<Comment?> GetByIdAsync(Guid id)
+        {
+            return await _context.Comments.FindAsync(id);
+        }
+
         public Task AddAsync(Comment comment)
         {
             _context.Comments.Add(comment);
