@@ -138,5 +138,33 @@ namespace DotLink.Api.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        [Authorize]
+        [HttpDelete("{postId:guid}")]
+        public async Task<IActionResult> DeletePost(Guid postId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+
+            var command = new DeletePostCommand
+            {
+                PostId = postId,
+                UserId = userId
+            };
+
+            try
+            {
+                await _mediator.Send(command);
+                return NoContent(); // HTTP 204 No Content
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid(); // HTTP 403 Forbidden
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
     }
 }
