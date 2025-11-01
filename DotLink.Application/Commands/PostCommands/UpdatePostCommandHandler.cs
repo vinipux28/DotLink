@@ -25,6 +25,11 @@ namespace DotLink.Application.Commands.PostCommands
                 throw new Exception($"Post with ID {request.PostId} not found.");
             }
 
+            if (post.AuthorId != request.UserId)
+            {
+                throw new UnauthorizedAccessException("Only author is allowed to edit this post.");
+            }
+
             post.UpdateTitle(request.Title);
             post.UpdateContent(request.Content);
 
