@@ -58,6 +58,16 @@ namespace DotLink.Infrastructure.Data
                 entity.Property(p => p.Title).HasMaxLength(250).IsRequired();
             });
 
+            modelBuilder.Entity<Comment>(entity =>
+            {
+                entity.HasOne(c => c.ParentComment)
+                      .WithMany(c => c.Replies)
+                      .HasForeignKey(c => c.ParentCommentId)
+                      .IsRequired(false)
+                      .OnDelete(DeleteBehavior.Restrict);
+                                                          
+            });
+
             modelBuilder.Entity<PostVote>(entity =>
             {
                 entity.HasKey(v => new { v.PostId, v.UserId });
