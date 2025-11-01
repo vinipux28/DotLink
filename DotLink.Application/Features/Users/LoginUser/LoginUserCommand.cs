@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System;
 
-namespace DotLink.Application.Commands.UserCommands
+namespace DotLink.Application.Features.Users.LoginUser
 {
     public class LoginUserCommand : IRequest<string>
     {

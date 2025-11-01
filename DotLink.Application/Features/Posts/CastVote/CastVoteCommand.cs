@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System;
 
-namespace DotLink.Application.Commands.PostCommands
+namespace DotLink.Application.Features.Posts.CastVote
 {
     public class CastVoteCommand : IRequest<Unit>
     {

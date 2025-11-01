@@ -2,10 +2,13 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using DotLink.Application.Queries.PostQueries;
-using DotLink.Application.Commands.PostCommands;
-using DotLink.Application.DTOs;
-using DotLink.Application.Commands.CommentCommands;
+using DotLink.Application.Features.Posts.GetPostById;
+using DotLink.Application.Features.Posts.CreatePost;
+using DotLink.Application.Features.Posts.GetRecentPosts;
+using DotLink.Application.Features.Posts.CastVote;
+using DotLink.Application.Features.Posts.UpdatePost;
+using DotLink.Application.Features.Posts.DeletePost;
+using DotLink.Application.Features.Comments.CreateComment;
 
 namespace DotLink.Api.Controllers
 {

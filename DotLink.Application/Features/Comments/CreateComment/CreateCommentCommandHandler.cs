@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotLink.Application.Commands.CommentCommands
+namespace DotLink.Application.Features.Comments.CreateComment
 {
     public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand, Guid>
     {

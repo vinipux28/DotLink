@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using System;
 
-namespace DotLink.Application.Commands.PostCommands
+namespace DotLink.Application.Features.Posts.DeletePost
 {
     public class DeletePostCommandValidator : AbstractValidator<DeletePostCommand>
     {

@@ -4,7 +4,7 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotLink.Application.Commands.UserCommands
+namespace DotLink.Application.Features.Users.LoginUser
 {
     public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, string>
     {

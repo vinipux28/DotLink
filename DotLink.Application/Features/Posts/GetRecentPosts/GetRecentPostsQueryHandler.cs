@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotLink.Application.Queries.PostQueries
+namespace DotLink.Application.Features.Posts.GetRecentPosts
 {
     public class GetRecentPostsQueryHandler : IRequestHandler<GetRecentPostsQuery, IEnumerable<PostDTOPartial>>
     {

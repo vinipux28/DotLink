@@ -5,7 +5,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace DotLink.Application.Commands.PostCommands
+namespace DotLink.Application.Features.Posts.CastVote
 {
     public class CastVoteCommandHandler : IRequestHandler<CastVoteCommand, Unit>
     {

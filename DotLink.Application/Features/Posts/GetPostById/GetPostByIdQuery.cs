@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using MediatR;
 using DotLink.Domain.Entities;
 
-namespace DotLink.Application.Queries.PostQueries
+namespace DotLink.Application.Features.Posts.GetPostById
 {
     public class GetPostByIdQuery : IRequest<PostDTO>
     {
