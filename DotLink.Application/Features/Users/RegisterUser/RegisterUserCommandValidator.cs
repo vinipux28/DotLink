@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace DotLink.Application.Commands.UserCommands
+namespace DotLink.Application.Features.Users.RegisterUser
 {
     public class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
     {
