@@ -1,4 +1,5 @@
 ﻿using DotLink.Application.Features.Comments.CreateComment;
+using DotLink.Application.Features.Comments.DeleteComment;
 using DotLink.Application.Features.Comments.UpdateComment;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -88,6 +89,28 @@ namespace DotLink.Api.Controllers
             }
         }
 
-
+        [Authorize]
+        [HttpDelete("{commentId:guid}")]
+        public async Task<IActionResult> DeleteComment(Guid commentId)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                return Unauthorized();
+            }
+            var command = new DeleteCommentCommand
+            {
+                CommentId = commentId
+            };
+            try
+            {
+                await _mediator.Send(command);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
     }
 }
