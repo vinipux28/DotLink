@@ -18,32 +18,6 @@ namespace DotLink.Application.Features.Posts.GetPostById
             _postRepository = postRepository;
         }
 
-        /*private static List<CommentDTO> BuildCommentTree(List<Comment> allComments)
-        {
-            var dictionary = allComments.ToDictionary(
-                c => c.Id,
-                c => new CommentDTO(c)
-            );
-
-            var rootComments = new List<CommentDTO>();
-
-            foreach (var commentDto in dictionary.Values)
-            {
-                if (commentDto.ParentCommentId.HasValue)
-                {
-                    if (dictionary.TryGetValue(commentDto.ParentCommentId.Value, out var parentDto))
-                    {
-                        parentDto.Replies.Add(commentDto);
-                    }
-                }
-                else
-                {
-                    rootComments.Add(commentDto);
-                }
-            }
-
-            return rootComments;
-        }*/
 
         public async Task<PostDTO> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
         {
@@ -54,13 +28,6 @@ namespace DotLink.Application.Features.Posts.GetPostById
             }
 
             var postDTO = new PostDTO(post);
-
-            /*if (request.IncludeComments && post.Comments != null && post.Comments.Any())
-            {
-                var allCommentsList = post.Comments.ToList();
-
-                postDTO.Comments = BuildCommentTree(allCommentsList);
-            }*/
 
             return postDTO;
         }
