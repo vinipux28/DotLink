@@ -104,6 +104,7 @@ namespace DotLink.Api.Controllers
             command.UserId = userId;
             command.PostId = postId;
 
+            Console.WriteLine($"ParentCommentId is {command.ParentCommentId}");
             try
             {
                 Guid commentId = await _mediator.Send(command);
