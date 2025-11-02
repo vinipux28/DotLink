@@ -53,7 +53,17 @@ namespace DotLink.Application.Features.Posts.GetPostById
                 throw new Exception($"Post with ID {request.PostId} not found.");
             }
 
-            return new PostDTO(post);
+            var postDTO = new PostDTO(post);
+
+            if (request.IncludeComments && post.Comments != null && post.Comments.Any())
+            {
+                // Преобразуем загруженную коллекцию (post.Comments) в List для BuildCommentTree
+                var allCommentsList = post.Comments.ToList();
+
+                postDTO.Comments = BuildCommentTree(allCommentsList);
+            }
+
+            return postDTO;
         }
     }
 }
