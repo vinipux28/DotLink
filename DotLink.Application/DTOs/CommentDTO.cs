@@ -10,6 +10,9 @@ namespace DotLink.Application.DTOs
         public DateTime CreatedAt { get; set; }
         public UserDTO Author { get; set; }
 
+        public Guid? ParentCommentId { get; set; }
+        public List<CommentDTO> Replies { get; set; } = new List<CommentDTO>();
+
         public CommentDTO(Comment comment)
         {
             Id = comment.Id;
