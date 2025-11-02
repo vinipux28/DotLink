@@ -1,6 +1,8 @@
-﻿using MediatR;
+﻿using DotLink.Application.Features.Comments.CreateComment;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace DotLink.Api.Controllers
 {
@@ -13,6 +15,32 @@ namespace DotLink.Api.Controllers
         public CommentController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+
+        [Authorize]
+        [HttpPost("{postId:guid}/comment")]
+        public async Task<IActionResult> CreateComment(Guid postId, [FromBody] CreateCommentCommand command)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                return Unauthorized();
+            }
+
+            command.UserId = userId;
+            command.PostId = postId;
+
+            Console.WriteLine($"ParentCommentId is {command.ParentCommentId}");
+            try
+            {
+                Guid commentId = await _mediator.Send(command);
+                return CreatedAtAction(nameof(CreateComment), new { id = commentId }, new { CommentId = commentId });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
 
     }

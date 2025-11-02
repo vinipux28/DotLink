@@ -92,32 +92,6 @@ namespace DotLink.Api.Controllers
 
 
         [Authorize]
-        [HttpPost("{postId:guid}/comment")]
-        public async Task<IActionResult> CreateComment(Guid postId, [FromBody] CreateCommentCommand command)
-        {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId))
-            {
-                return Unauthorized();
-            }
-
-            command.UserId = userId;
-            command.PostId = postId;
-
-            Console.WriteLine($"ParentCommentId is {command.ParentCommentId}");
-            try
-            {
-                Guid commentId = await _mediator.Send(command);
-                return CreatedAtAction(nameof(CreateComment), new { id = commentId }, new { CommentId = commentId });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
-        }
-
-
-        [Authorize]
         [HttpPut("{postId:guid}")]
         public async Task<IActionResult> UpdatePost(Guid postId, [FromBody] UpdatePostCommand command)
         {
