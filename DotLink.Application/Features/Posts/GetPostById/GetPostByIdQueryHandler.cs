@@ -18,7 +18,7 @@ namespace DotLink.Application.Features.Posts.GetPostById
             _postRepository = postRepository;
         }
 
-        private static List<CommentDTO> BuildCommentTree(List<Comment> allComments)
+        /*private static List<CommentDTO> BuildCommentTree(List<Comment> allComments)
         {
             var dictionary = allComments.ToDictionary(
                 c => c.Id,
@@ -43,7 +43,7 @@ namespace DotLink.Application.Features.Posts.GetPostById
             }
 
             return rootComments;
-        }
+        }*/
 
         public async Task<PostDTO> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
         {
@@ -55,13 +55,12 @@ namespace DotLink.Application.Features.Posts.GetPostById
 
             var postDTO = new PostDTO(post);
 
-            if (request.IncludeComments && post.Comments != null && post.Comments.Any())
+            /*if (request.IncludeComments && post.Comments != null && post.Comments.Any())
             {
-                // Преобразуем загруженную коллекцию (post.Comments) в List для BuildCommentTree
                 var allCommentsList = post.Comments.ToList();
 
                 postDTO.Comments = BuildCommentTree(allCommentsList);
-            }
+            }*/
 
             return postDTO;
         }

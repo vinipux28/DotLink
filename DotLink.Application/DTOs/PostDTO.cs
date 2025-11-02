@@ -30,7 +30,7 @@ namespace DotLink.Application.DTOs
             Author = new UserDTO(post.Author);
             UpVotes = post.PostVotes.Count(v => v.IsUpvote);
             DownVotes = post.PostVotes.Count(v => !v.IsUpvote);
-            //Comments = post.Comments.Select(c => new CommentDTO(c)).ToList();
+            Comments = post.Comments.Where(c => c.ParentCommentId is null).Select(c => new CommentDTO(c, post.Comments.ToList())).ToList();
         }
     }
 }
