@@ -28,6 +28,12 @@ namespace DotLink.Infrastructure.Repositories
             return _context.SaveChangesAsync();
         }
 
+        public Task UpdateAsync(Comment comment)
+        {
+            _context.Comments.Update(comment);
+            return _context.SaveChangesAsync();
+        }
+
         public Task DeleteAsync(Comment comment)
         {
             _context.Comments.Remove(comment);

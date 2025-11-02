@@ -11,6 +11,7 @@ namespace DotLink.Application.Repositories
     {
         public Task<Comment?> GetByIdAsync(Guid id);
         public Task AddAsync(Comment comment);
+        public Task UpdateAsync(Comment comment);
         public Task DeleteAsync(Comment comment);
     }
 }
