@@ -8,7 +8,7 @@ namespace DotLink.Api.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/Post")]
+    [Route("api/post/{postId:guid}/comment")]
     public class CommentController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -17,9 +17,8 @@ namespace DotLink.Api.Controllers
             _mediator = mediator;
         }
 
-
         [Authorize]
-        [HttpPost("{postId:guid}/comment")]
+        [HttpPost]
         public async Task<IActionResult> CreateComment(Guid postId, [FromBody] CreateCommentCommand command)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -42,6 +41,9 @@ namespace DotLink.Api.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+
+
 
     }
 }
