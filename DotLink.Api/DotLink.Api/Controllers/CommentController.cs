@@ -1,4 +1,5 @@
 ﻿using DotLink.Application.Features.Comments.CreateComment;
+using DotLink.Application.Features.Comments.UpdateComment;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -59,6 +60,27 @@ namespace DotLink.Api.Controllers
             {
                 Guid replyCommentId = await _mediator.Send(command);
                 return CreatedAtAction(nameof(ReplyToComment), new { id = replyCommentId }, new { CommentId = replyCommentId });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
+
+        [Authorize]
+        [HttpPut("{commentId:guid}")]
+        public async Task<IActionResult> UpdateComment(Guid commentId, [FromBody] UpdateCommentCommand command)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                return Unauthorized();
+            }
+            command.CommentId = commentId;
+            try
+            {
+                await _mediator.Send(command);
+                return NoContent();
             }
             catch (Exception ex)
             {
