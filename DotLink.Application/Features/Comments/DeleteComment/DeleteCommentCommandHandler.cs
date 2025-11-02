@@ -17,8 +17,14 @@ namespace DotLink.Application.Features.Comments.DeleteComment
         }
         public async Task<Unit> Handle(DeleteCommentCommand request, CancellationToken cancellationToken)
         {
-            // TODO : Call delete comment method from repository
-            await Task.CompletedTask;
+            var comment = await _commentRepository.GetByIdAsync(request.CommentId);
+            if (comment is null)
+            {
+                throw new Exception($"Comment with ID {request.CommentId} not found.");
+            }
+
+            await _commentRepository.DeleteAsync(comment);
+
             return Unit.Value;
         }
     }
