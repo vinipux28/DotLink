@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using DotLink.Application.DTOs;
 using DotLink.Application.Repositories;
+using DotLink.Domain.Entities;
 
 namespace DotLink.Application.Features.Posts.GetPostById
 {
@@ -17,6 +18,7 @@ namespace DotLink.Application.Features.Posts.GetPostById
             _postRepository = postRepository;
         }
 
+
         public async Task<PostDTO> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
         {
             var post = await _postRepository.GetByIdAsync(request.PostId, request.IncludeComments);
@@ -25,7 +27,9 @@ namespace DotLink.Application.Features.Posts.GetPostById
                 throw new Exception($"Post with ID {request.PostId} not found.");
             }
 
-            return new PostDTO(post);
+            var postDTO = new PostDTO(post);
+
+            return postDTO;
         }
     }
 }

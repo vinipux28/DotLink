@@ -36,6 +36,9 @@ namespace DotLink.Infrastructure.Repositories
             {
                 query = query.Include(p => p.Comments)
                              .ThenInclude(c => c.Author);
+
+                query = query.Include(p => p.Comments)
+                         .ThenInclude(c => c.ParentComment);
             }
 
             return await query.FirstOrDefaultAsync(p => p.Id == postId);
