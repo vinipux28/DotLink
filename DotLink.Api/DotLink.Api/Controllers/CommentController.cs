@@ -43,6 +43,28 @@ namespace DotLink.Api.Controllers
         }
 
 
+        [Authorize]
+        [HttpPost("{commentId:guid}/reply")]
+        public async Task<IActionResult> ReplyToComment(Guid postId, Guid commentId, [FromBody] CreateCommentCommand command)
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId))
+            {
+                return Unauthorized();
+            }
+            command.UserId = userId;
+            command.PostId = postId;
+            command.ParentCommentId = commentId;
+            try
+            {
+                Guid replyCommentId = await _mediator.Send(command);
+                return CreatedAtAction(nameof(ReplyToComment), new { id = replyCommentId }, new { CommentId = replyCommentId });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
+        }
 
 
     }
