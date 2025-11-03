@@ -22,7 +22,7 @@ namespace DotLink.Application.Features.Comments.GetCommentsForPost
         {
             var comments = await _commentRepository.GetByPostIdAsync(request.PostId);
 
-            comments.Select(c => new CommentDTO(c));
+            return comments.Select(c => new CommentDTO(c)).ToList();
         }
 
     }
