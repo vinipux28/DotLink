@@ -71,6 +71,7 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<ValidationExceptionFilter>();
+    options.Filters.Add<UnauthorizedAccessExceptionFilter>();
 });
 
 builder.Services.AddEndpointsApiExplorer();
