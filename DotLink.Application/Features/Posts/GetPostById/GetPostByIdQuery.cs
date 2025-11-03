@@ -12,7 +12,6 @@ namespace DotLink.Application.Features.Posts.GetPostById
     public class GetPostByIdQuery : IRequest<PostDTO>
     {
         public Guid PostId { get; set; }
-        public bool IncludeComments { get; set; } = false;
 
     }
 }
