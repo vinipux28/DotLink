@@ -26,22 +26,11 @@ namespace DotLink.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Post?> GetByIdAsync(Guid postId, bool includeComments = false)
+        public async Task<Post?> GetByIdAsync(Guid postId)
         {
-            var query = _context.Posts
+            return await _context.Posts
                     .Include(p => p.Author)
-                    .AsQueryable();
-
-            if (includeComments)
-            {
-                query = query.Include(p => p.Comments)
-                             .ThenInclude(c => c.Author);
-
-                query = query.Include(p => p.Comments)
-                         .ThenInclude(c => c.ParentComment);
-            }
-
-            return await query.FirstOrDefaultAsync(p => p.Id == postId);
+                    .FirstOrDefaultAsync(p => p.Id == postId);
         }
 
         public Task UpdateAsync(Post post)
