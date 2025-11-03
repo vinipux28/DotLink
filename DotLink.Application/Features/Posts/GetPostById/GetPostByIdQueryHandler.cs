@@ -21,7 +21,7 @@ namespace DotLink.Application.Features.Posts.GetPostById
 
         public async Task<PostDTO> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
         {
-            var post = await _postRepository.GetByIdAsync(request.PostId, request.IncludeComments);
+            var post = await _postRepository.GetByIdAsync(request.PostId);
             if (post == null)
             {
                 throw new Exception($"Post with ID {request.PostId} not found.");
