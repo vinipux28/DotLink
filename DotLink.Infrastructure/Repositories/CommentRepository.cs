@@ -44,6 +44,26 @@ namespace DotLink.Infrastructure.Repositories
             return (comments, totalCount);
         }
 
+        public async Task<(List<Comment> Comments, int TotalCount)> GetPaginatedRepliesAsync(
+            Guid parentCommentId,
+            int pageNumber,
+            int pageSize)
+        {
+            var baseQuery = _context.Comments
+                .Where(c => c.ParentCommentId == parentCommentId)
+                .Include(c => c.Author);
+
+            var totalCount = await baseQuery.CountAsync();
+
+            var comments = await baseQuery
+                .OrderByDescending(c => c.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (comments, totalCount);
+        }
+
         public Task AddAsync(Comment comment)
         {
             _context.Comments.Add(comment);
