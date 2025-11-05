@@ -15,6 +15,11 @@ namespace DotLink.Application.Repositories
             int pageNumber,
             int pageSize
         );
+        Task<(List<Comment> Comments, int TotalCount)> GetPaginatedRepliesAsync(
+            Guid parentCommentId,
+            int pageNumber,
+            int pageSize
+        );
         public Task AddAsync(Comment comment);
         public Task UpdateAsync(Comment comment);
         public Task DeleteAsync(Comment comment);
