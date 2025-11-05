@@ -23,13 +23,25 @@ namespace DotLink.Infrastructure.Repositories
             return await _context.Comments.FindAsync(id);
         }
 
-        public async Task<List<Comment>> GetByPostIdAsync(Guid postId)
+        public async Task<(List<Comment> Comments, int TotalCount)> GetPaginatedByPostIdAsync(
+            Guid postId,
+            int pageNumber,
+            int pageSize)
         {
-            return await _context.Comments
+            var baseQuery = _context.Comments
                 .Where(c => c.PostId == postId)
-                .Include(c => c.Author)
+                .Where(c => c.ParentCommentId == null)
+                .Include(c => c.Author);
+
+            var totalCount = await baseQuery.CountAsync();
+
+            var comments = await baseQuery
                 .OrderByDescending(c => c.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            return (comments, totalCount);
         }
 
         public Task AddAsync(Comment comment)

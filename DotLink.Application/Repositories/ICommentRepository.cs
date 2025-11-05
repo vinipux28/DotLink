@@ -10,7 +10,11 @@ namespace DotLink.Application.Repositories
     public interface ICommentRepository
     {
         public Task<Comment?> GetByIdAsync(Guid id);
-        Task<List<Comment>> GetByPostIdAsync(Guid postId);
+        Task<(List<Comment> Comments, int TotalCount)> GetPaginatedByPostIdAsync(
+            Guid postId,
+            int pageNumber,
+            int pageSize
+        );
         public Task AddAsync(Comment comment);
         public Task UpdateAsync(Comment comment);
         public Task DeleteAsync(Comment comment);
