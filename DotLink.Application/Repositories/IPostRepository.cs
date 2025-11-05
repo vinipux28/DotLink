@@ -7,7 +7,7 @@ namespace DotLink.Application.Repositories
 {
     public interface IPostRepository
     {
-        Task<Post?> GetByIdAsync(Guid postId, bool includeComments = false);
+        Task<Post?> GetByIdAsync(Guid postId);
 
         Task AddAsync(Post post);
 
