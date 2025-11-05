@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DotLink.Application.Features.Comments.GetCommentsForPost
 {
-    public class GetCommentsForPostQueryHandler : IRequestHandler<GetCommentsForPostQuery, List<CommentDTO>>
+    public class GetCommentsForPostQueryHandler : IRequestHandler<GetCommentsForPostQuery, PaginatedResponse<CommentDTO>>
     {
         private readonly ICommentRepository _commentRepository;
 
@@ -18,11 +18,22 @@ namespace DotLink.Application.Features.Comments.GetCommentsForPost
             _commentRepository = commentRepository;
         }
 
-        public async Task<List<CommentDTO>> Handle(GetCommentsForPostQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedResponse<CommentDTO>> Handle(GetCommentsForPostQuery request, CancellationToken cancellationToken)
         {
-            var comments = await _commentRepository.GetByPostIdAsync(request.PostId);
+            var (comments, totalCount) = await _commentRepository.GetPaginatedByPostIdAsync(
+                request.PostId,
+                request.PageNumber,
+                request.PageSize
+            );
 
-            return comments.Select(c => new CommentDTO(c)).ToList();
+            var commentDTOs = comments.Select(c => new CommentDTO(c)).ToList();
+
+            return new PaginatedResponse<CommentDTO>(
+                commentDTOs,
+                totalCount,
+                request.PageNumber,
+                request.PageSize
+            );
         }
 
     }
