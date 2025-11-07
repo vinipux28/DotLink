@@ -18,6 +18,7 @@ namespace DotLink.Application.DTOs
             Content = comment.Content;
             CreatedAt = comment.CreatedAt;
             Author = new UserDTO(comment.Author);
+            ParentCommentId = comment.ParentCommentId;
         }
     }
 }
