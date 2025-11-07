@@ -54,7 +54,7 @@ namespace DotLink.Api.Controllers
 
             Guid postId = await _mediator.Send(command);
 
-            return CreatedAtAction(nameof(GetPostById), new { id = postId }, new { PostId = postId });
+            return CreatedAtAction(nameof(GetPostById), new { postId = postId }, new { PostId = postId });
         }
 
         [HttpGet("recent")]
