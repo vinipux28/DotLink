@@ -15,6 +15,8 @@ namespace DotLink.Domain.Entities
         public string Email { get; private set; } = String.Empty;
         public string PasswordHash { get; private set; } = String.Empty;
 
+        public string? Bio { get; private set; }
+
         public ICollection<Post> Posts { get; private set; } = new List<Post>();
         public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
         public ICollection<PostVote> Votes { get; private set; } = new List<PostVote>();
@@ -37,6 +39,12 @@ namespace DotLink.Domain.Entities
                 throw new ArgumentException("Username cannot be empty.", nameof(newUsername));
             }
             Username = newUsername;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void UpdateBio(string? bio)
+        {
+            Bio = bio;
             UpdatedAt = DateTime.UtcNow;
         }
 
