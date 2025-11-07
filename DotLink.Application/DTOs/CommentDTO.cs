@@ -11,17 +11,14 @@ namespace DotLink.Application.DTOs
         public UserDTO Author { get; set; }
 
         public Guid? ParentCommentId { get; set; }
-        public List<CommentDTO> Replies { get; set; } = new List<CommentDTO>();
 
-        public CommentDTO(Comment comment, List<Comment> postComments)
+        public CommentDTO(Comment comment)
         {
             Id = comment.Id;
             Content = comment.Content;
             CreatedAt = comment.CreatedAt;
             Author = new UserDTO(comment.Author);
-            Replies = postComments.Where(cdto => cdto.ParentCommentId == comment.Id)
-                                  .Select(c => new CommentDTO(c, postComments))
-                                  .ToList();
+            ParentCommentId = comment.ParentCommentId;
         }
     }
 }

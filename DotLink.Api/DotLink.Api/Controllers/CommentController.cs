@@ -1,5 +1,6 @@
 ﻿using DotLink.Application.Features.Comments.CreateComment;
 using DotLink.Application.Features.Comments.DeleteComment;
+using DotLink.Application.Features.Comments.GetCommentReplies;
 using DotLink.Application.Features.Comments.UpdateComment;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -67,6 +68,26 @@ namespace DotLink.Api.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        [HttpGet("{parentCommentId:guid}/replies")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetCommentReplies(
+            Guid parentCommentId,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var query = new GetCommentRepliesQuery
+            {
+                ParentCommentId = parentCommentId,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
+        }
+
 
         [Authorize]
         [HttpPut("{commentId:guid}")]

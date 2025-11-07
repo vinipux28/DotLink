@@ -9,6 +9,7 @@ using DotLink.Application.Features.Posts.CastVote;
 using DotLink.Application.Features.Posts.UpdatePost;
 using DotLink.Application.Features.Posts.DeletePost;
 using DotLink.Application.Features.Comments.CreateComment;
+using DotLink.Application.Features.Comments.GetCommentsForPost;
 
 namespace DotLink.Api.Controllers
 {
@@ -53,7 +54,7 @@ namespace DotLink.Api.Controllers
 
             Guid postId = await _mediator.Send(command);
 
-            return CreatedAtAction(nameof(GetPostById), new { id = postId }, new { PostId = postId });
+            return CreatedAtAction(nameof(GetPostById), new { postId = postId }, new { PostId = postId });
         }
 
         [HttpGet("recent")]
@@ -143,6 +144,25 @@ namespace DotLink.Api.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
+        }
+
+
+        [HttpGet("{postId:guid}/comments")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPostComments(
+        Guid postId,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20)
+        {
+            var query = new GetCommentsForPostQuery
+            {
+                PostId = postId,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
         }
     }
 }

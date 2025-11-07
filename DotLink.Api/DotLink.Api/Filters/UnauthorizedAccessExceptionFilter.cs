@@ -25,6 +25,4 @@ namespace DotLink.Api.Filters
             }
         }
     }
-
-}
 }
