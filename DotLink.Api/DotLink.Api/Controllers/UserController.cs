@@ -1,4 +1,5 @@
 ﻿using DotLink.Application.DTOs;
+using DotLink.Application.Features.Users.UploadProfilePicture;
 using DotLink.Application.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -42,6 +43,47 @@ namespace DotLink.Api.Controllers
 
             await _mediator.Send(command);
             return NoContent();
+        }
+
+        [Authorize]
+        [HttpPost("profilePicture")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadProfilePicture([FromForm] IFormFile file)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { error = "No file provided." });
+            }
+
+            const int MaxFileSize = 5 * 1024 * 1024;
+            if (file.Length > MaxFileSize)
+            {
+                return BadRequest(new { error = "File size exceeds 5MB limit." });
+            }
+
+            var allowedTypes = new[] { "image/jpeg", "image/png" };
+            if (!allowedTypes.Contains(file.ContentType))
+            {
+                return BadRequest(new { error = "Only JPEG and PNG images are allowed." });
+            }
+          
+
+            using var fileStream = file.OpenReadStream();
+
+            var command = new UploadProfilePictureCommand
+            {
+                UserId = userId,
+                ProfilePictureStream = fileStream,
+                ProfilePictureFileName = file.FileName,
+                ProfilePictureContentType = file.ContentType
+            };
+
+            var newKey = await _mediator.Send(command);
+
+            return Ok(new { profilePictureKey = newKey });
         }
     }
 }
