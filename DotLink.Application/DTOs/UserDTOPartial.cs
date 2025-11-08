@@ -13,9 +13,6 @@ namespace DotLink.Application.DTOs
         public string Username { get; set; }
         public string? ProfilePictureKey { get; set; }
 
-        public DateTime? UpdatedAt { get; set; }
-        public DateTime CreatedAt { get; set; }
-
 
         public UserDTOPartial(User? user)
         {
@@ -26,9 +23,6 @@ namespace DotLink.Application.DTOs
             Id = user.Id;
             Username = user.Username;
             ProfilePictureKey = user.ProfilePictureKey;
-
-            CreatedAt = user.CreatedAt;
-            UpdatedAt = user.UpdatedAt;
         }
     }
 }
