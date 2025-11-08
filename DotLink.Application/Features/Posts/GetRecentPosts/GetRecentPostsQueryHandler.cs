@@ -27,7 +27,7 @@ namespace DotLink.Application.Features.Posts.GetRecentPosts
                 Title = p.Title,
                 Content = p.Content,
                 CreatedAt = p.CreatedAt,
-                AuthorUsername = p.Author?.Username ?? "Unknown" // TO DO: Make this property of type UserDto
+                Author = new UserDTOPartial(p.Author)
             }).ToList();
         }
     }
