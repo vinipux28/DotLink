@@ -122,6 +122,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "DotLink API V1");
+        c.ConfigObject.AdditionalItems["persistAuthorization"] = true;
     });
 }
 
