@@ -43,10 +43,11 @@ namespace DotLink.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public Task<bool> IsUsernameUniqueAsync(string username)
+        public async Task<bool> IsUsernameUniqueAsync(string username)
         {
-            _context.Users.AsNoTracking();
-            return _context.Users.AllAsync(u => u.Username != username);
+            return !await _context.Users
+                .AsNoTracking()
+                .AnyAsync(u => u.Username == username);
         }
     }
 }
