@@ -15,7 +15,7 @@ namespace DotLink.Domain.Entities
         public string Email { get; private set; } = String.Empty;
         public string PasswordHash { get; private set; } = String.Empty;
 
-        public string? ProfilePictureUrl { get; private set; }
+        public string? ProfilePictureKey { get; private set; }
         public string? Bio { get; private set; }
 
         public ICollection<Post> Posts { get; private set; } = new List<Post>();
@@ -43,9 +43,9 @@ namespace DotLink.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
-        public void UpdateProfilePictureUrl(string? url)
+        public void UpdateProfilePictureKey(string? key)
         {
-            ProfilePictureUrl = url;
+            ProfilePictureKey = key;
             UpdatedAt = DateTime.UtcNow;
         }
 
