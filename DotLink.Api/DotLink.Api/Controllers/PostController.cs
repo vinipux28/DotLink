@@ -57,6 +57,7 @@ namespace DotLink.Api.Controllers
             return CreatedAtAction(nameof(GetPostById), new { postId = postId }, new { PostId = postId });
         }
 
+        [AllowAnonymous]
         [HttpGet("recent")]
         public async Task<IActionResult> GetRecentPosts([FromQuery] GetRecentPostsQuery query)
         {
