@@ -35,7 +35,6 @@ namespace DotLink.Application.Features.Users.UploadProfilePicture
                 "profile-pics"
             );
 
-            // 3. Обновление сущности новым ключом
             user.UpdateProfilePictureKey(newKey);
 
             await _userRepository.UpdateAsync(user);

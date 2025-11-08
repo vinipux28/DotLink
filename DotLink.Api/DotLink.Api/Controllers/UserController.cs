@@ -1,4 +1,5 @@
-﻿using DotLink.Application.DTOs;
+﻿using DotLink.Api.Models;
+using DotLink.Application.DTOs;
 using DotLink.Application.Features.Users.UploadProfilePicture;
 using DotLink.Application.Repositories;
 using MediatR;
@@ -48,10 +49,12 @@ namespace DotLink.Api.Controllers
         [Authorize]
         [HttpPost("profilePicture")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadProfilePicture([FromForm] IFormFile file)
+        public async Task<IActionResult> UploadProfilePicture([FromForm] UploadFileRequest request)
         {
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+
+            var file = request.File;
 
             if (file == null || file.Length == 0)
             {
