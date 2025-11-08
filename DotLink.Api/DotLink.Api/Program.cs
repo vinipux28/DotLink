@@ -19,6 +19,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IFileStorageService>(provider =>
+{
+    var storageSettings = builder.Configuration.GetSection("StorageSettings");
+    return new LocalFileStorageService(storageSettings["LocalStoragePath"]);
+});
 
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
