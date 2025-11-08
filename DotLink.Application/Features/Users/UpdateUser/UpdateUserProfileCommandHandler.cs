@@ -27,30 +27,6 @@ namespace DotLink.Application.Features.Users.UpdateUserProfile
                 throw new Exception("User not found.");
             }
 
-            string? newPictureUrl = null;
-
-
-            if (request.ProfilePictureStream is not null && request.ProfilePictureFileName is not null)
-            {
-                if (!string.IsNullOrWhiteSpace(user.ProfilePictureUrl))
-                {
-                    await _fileStorageService.DeleteFileAsync(user.ProfilePictureUrl);
-                }
-
-                newPictureUrl = await _fileStorageService.UploadFileAsync(
-                    request.ProfilePictureStream,
-                    request.ProfilePictureFileName,
-                    request.ProfilePictureContentType ?? "application/octet-stream",
-                    "profile-pics"
-                );
-            }
-            else if (request.RemoveProfilePicture && !string.IsNullOrWhiteSpace(user.ProfilePictureUrl))
-            {
-                await _fileStorageService.DeleteFileAsync(user.ProfilePictureUrl);
-                newPictureUrl = null;
-            }
-
-
             if (!string.IsNullOrWhiteSpace(request.NewUsername))
             {
                 user.UpdateUsername(request.NewUsername);
@@ -59,11 +35,6 @@ namespace DotLink.Application.Features.Users.UpdateUserProfile
             if (request.NewBio != null)
             {
                 user.UpdateBio(request.NewBio);
-            }
-
-            if (newPictureUrl != null || request.RemoveProfilePicture)
-            {
-                user.UpdateProfilePictureUrl(newPictureUrl);
             }
 
             await _userRepository.UpdateAsync(user);
