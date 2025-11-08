@@ -1,5 +1,4 @@
 using DotLink.Api.Filters;
-using DotLink.Api.Swagger;
 using DotLink.Application.Features.Users.RegisterUser;
 using DotLink.Application.PipelineBehaviors;
 using DotLink.Application.Repositories;
@@ -22,8 +21,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IFileStorageService>(provider =>
 {
+    var env = provider.GetRequiredService<IWebHostEnvironment>();
+
     var storageSettings = builder.Configuration.GetSection("StorageSettings");
-    return new LocalFileStorageService(storageSettings["LocalStoragePath"]);
+    var relativePathSegment = storageSettings["LocalStoragePath"] ?? "uploads";
+
+    var localStorageRoot = env.WebRootPath;
+
+    var localStoragePath = Path.Combine(localStorageRoot, relativePathSegment);
+
+    if (!Directory.Exists(localStoragePath))
+    {
+        Directory.CreateDirectory(localStoragePath);
+    }
+
+    return new LocalFileStorageService(localStoragePath);
 });
 
 

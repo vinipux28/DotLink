@@ -11,14 +11,15 @@ namespace DotLink.Infrastructure.Services
     public class LocalFileStorageService : IFileStorageService
     {
         private readonly string _localStoragePath;
-        public LocalFileStorageService(string localStoragePath) { 
+        public LocalFileStorageService(string localStoragePath)
+        {
             _localStoragePath = localStoragePath;
         }
 
         public async Task<string> UploadFileAsync(
-            Stream fileStream, 
-            string fileName, 
-            string contentType, 
+            Stream fileStream,
+            string fileName,
+            string contentType,
             string containerName)
         {
             var fileExtension = Path.GetExtension(fileName);
@@ -46,8 +47,9 @@ namespace DotLink.Infrastructure.Services
         {
             if (string.IsNullOrWhiteSpace(fileKey)) return Task.CompletedTask;
 
-            var filePath = Path.Combine(_localStoragePath, fileKey);
+            var normalizedFileKey = fileKey.Replace('/', Path.DirectorySeparatorChar);
 
+            var filePath = Path.Combine(_localStoragePath, normalizedFileKey);
 
             if (File.Exists(filePath))
             {
@@ -58,14 +60,18 @@ namespace DotLink.Infrastructure.Services
 
         public Task<Stream> GetFileStreamAsync(string fileKey)
         {
-            var filePath = Path.Combine(_localStoragePath, fileKey);
+            var normalizedFileKey = fileKey.Replace('/', Path.DirectorySeparatorChar).Replace("%2F", Path.DirectorySeparatorChar.ToString());
+
+            var filePath = Path.Combine(_localStoragePath, normalizedFileKey);
 
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException("File not found on local storage.", filePath);
             }
 
-            return Task.FromResult<Stream>(new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read));
+            var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true);
+
+            return Task.FromResult<Stream>(stream);
         }
     }
 }
