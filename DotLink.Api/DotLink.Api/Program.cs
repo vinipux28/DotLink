@@ -1,24 +1,42 @@
-using DotLink.Infrastructure.Data;
-using DotLink.Application.Repositories;
-using DotLink.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
-using DotLink.Application.Services;
-using DotLink.Infrastructure.Services;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.OpenApi.Models;
-using DotLink.Application.PipelineBehaviors;
-using FluentValidation;
-using DotLink.Application.Features.Users.RegisterUser;
 using DotLink.Api.Filters;
+using DotLink.Application.Features.Users.RegisterUser;
+using DotLink.Application.PipelineBehaviors;
+using DotLink.Application.Repositories;
+using DotLink.Application.Services;
+using DotLink.Infrastructure.Data;
+using DotLink.Infrastructure.Repositories;
+using DotLink.Infrastructure.Services;
+using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IFileStorageService>(provider =>
+{
+    var env = provider.GetRequiredService<IWebHostEnvironment>();
+
+    var storageSettings = builder.Configuration.GetSection("StorageSettings");
+    var relativePathSegment = storageSettings["LocalStoragePath"] ?? "uploads";
+
+    var localStorageRoot = env.WebRootPath;
+
+    var localStoragePath = Path.Combine(localStorageRoot, relativePathSegment);
+
+    if (!Directory.Exists(localStoragePath))
+    {
+        Directory.CreateDirectory(localStoragePath);
+    }
+
+    return new LocalFileStorageService(localStoragePath);
+});
 
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
@@ -117,6 +135,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "DotLink API V1");
+        c.ConfigObject.AdditionalItems["persistAuthorization"] = true;
     });
 }
 

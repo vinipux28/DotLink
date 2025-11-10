@@ -15,6 +15,9 @@ namespace DotLink.Domain.Entities
         public string Email { get; private set; } = String.Empty;
         public string PasswordHash { get; private set; } = String.Empty;
 
+        public string? ProfilePictureKey { get; private set; }
+        public string? Bio { get; private set; }
+
         public ICollection<Post> Posts { get; private set; } = new List<Post>();
         public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
         public ICollection<PostVote> Votes { get; private set; } = new List<PostVote>();
@@ -40,6 +43,18 @@ namespace DotLink.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
+        public void UpdateProfilePictureKey(string? key)
+        {
+            ProfilePictureKey = key;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void UpdateBio(string? bio)
+        {
+            Bio = bio;
+            UpdatedAt = DateTime.UtcNow;
+        }
+
         public bool VerifyPassword(string password)
         {
             return BCrypt.Net.BCrypt.Verify(password, this.PasswordHash);
@@ -48,6 +63,14 @@ namespace DotLink.Domain.Entities
         public static string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password);
+        }
+
+        public void UpdatePassword(string newPassword)
+        {
+            string newHash = HashPassword(newPassword);
+
+            this.PasswordHash = newHash;
+            this.UpdatedAt = DateTime.UtcNow;
         }
 
 
