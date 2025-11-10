@@ -1,6 +1,4 @@
-﻿// DotLink.Application/Features/Users/ChangePassword/ChangePasswordCommandHandler.cs
-
-using MediatR;
+﻿using MediatR;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
