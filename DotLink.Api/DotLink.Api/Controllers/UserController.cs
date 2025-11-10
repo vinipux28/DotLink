@@ -1,5 +1,6 @@
 ﻿using DotLink.Api.Models;
 using DotLink.Application.DTOs;
+using DotLink.Application.Features.Users.ChangePassword;
 using DotLink.Application.Features.Users.RemoveProfilePicture;
 using DotLink.Application.Features.Users.UploadProfilePicture;
 using DotLink.Application.Repositories;
@@ -104,6 +105,23 @@ namespace DotLink.Api.Controllers
             await _mediator.Send(command);
 
             return NoContent();
+        }
+
+
+        [HttpPut("password")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+
+            command.UserId = userId;
+
+            await _mediator.Send(command);
+
+            return NoContent(); // 204 No Content
         }
     }
 }
