@@ -34,6 +34,22 @@ namespace DotLink.Api.Controllers
         }
 
         [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> GetCurrentUser()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user is null)
+            {
+                return NotFound();
+            }
+            return Ok(new UserDTO(user));
+        }
+
+
+        [Authorize]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserProfileCommand command)
