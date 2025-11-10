@@ -95,6 +95,7 @@ namespace DotLink.Api.Controllers
 
         [Authorize]
         [HttpPut("{postId:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UpdatePost(Guid postId, [FromBody] UpdatePostCommand command)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -121,6 +122,7 @@ namespace DotLink.Api.Controllers
 
         [Authorize]
         [HttpDelete("{postId:guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeletePost(Guid postId)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
