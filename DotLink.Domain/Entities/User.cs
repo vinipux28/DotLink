@@ -65,6 +65,14 @@ namespace DotLink.Domain.Entities
             return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
+        public void UpdatePassword(string newPassword)
+        {
+            string newHash = HashPassword(newPassword);
+
+            this.PasswordHash = newHash;
+            this.UpdatedAt = DateTime.UtcNow;
+        }
+
 
         public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; private set; }

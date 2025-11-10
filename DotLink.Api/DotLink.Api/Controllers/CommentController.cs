@@ -5,6 +5,7 @@ using DotLink.Application.Features.Comments.UpdateComment;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 
 namespace DotLink.Api.Controllers
@@ -94,11 +95,12 @@ namespace DotLink.Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UpdateComment(Guid commentId, [FromBody] UpdateCommentCommand command)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ;
             if (!Guid.TryParse(userIdClaim, out Guid userId))
             {
                 return Unauthorized();
             }
+            
             command.CommentId = commentId;
             try
             {
