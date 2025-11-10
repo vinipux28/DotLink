@@ -1,5 +1,6 @@
 ﻿using DotLink.Api.Models;
 using DotLink.Application.DTOs;
+using DotLink.Application.Features.Users.RemoveProfilePicture;
 using DotLink.Application.Features.Users.UploadProfilePicture;
 using DotLink.Application.Repositories;
 using MediatR;
@@ -87,6 +88,21 @@ namespace DotLink.Api.Controllers
             var newKey = await _mediator.Send(command);
 
             return Ok(new { profilePictureKey = newKey });
+        }
+
+
+        [HttpDelete("profilePicture")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<IActionResult> RemoveProfilePicture()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+
+            var command = new RemoveProfilePictureCommand { UserId = userId };
+
+            await _mediator.Send(command);
+
+            return NoContent();
         }
     }
 }
