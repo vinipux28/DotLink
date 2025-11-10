@@ -34,6 +34,7 @@ namespace DotLink.Api.Controllers
 
         [Authorize]
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserProfileCommand command)
         {
             if (!Guid.TryParse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value, out Guid userId))
