@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotLink.Application.Features.Search
 {
-    public class CompositeSearchQuery : IRequest<IEnumerable<SearchResult>>
+    public class CompositeSearchQuery : IRequest<List<SearchResultItem>>
     {
         public string SearchTerm { get; set; } = string.Empty;
     }

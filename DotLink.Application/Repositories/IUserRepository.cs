@@ -9,6 +9,7 @@ namespace DotLink.Application.Repositories
         Task<User?> GetByIdAsync(Guid userId);
         Task<User?> GetByEmailAsync(string email);
         Task<User?> GetByUsernameAsync(string username);
+        Task<List<User>> SearchUsersAsync(string searchTerm);
         Task AddAsync(User user);
         Task UpdateAsync(User user);
         Task<bool> IsUsernameUniqueAsync(string username);
