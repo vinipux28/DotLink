@@ -1,4 +1,5 @@
 using DotLink.Api.Filters;
+using DotLink.Application.Configuration;
 using DotLink.Application.Features.Users.RegisterUser;
 using DotLink.Application.PipelineBehaviors;
 using DotLink.Application.Repositories;
@@ -122,6 +123,11 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.Configure<ClientSettings>(
+    builder.Configuration.GetSection(ClientSettings.SectionName)
+);
+
 
 var app = builder.Build();
 
