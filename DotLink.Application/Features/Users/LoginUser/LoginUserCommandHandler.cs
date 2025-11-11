@@ -19,7 +19,7 @@ namespace DotLink.Application.Features.Users.LoginUser
 
         public async Task<string> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.GetByEmailAsync(request.Email);
+            var user = await _userRepository.GetByEmailAsync(request.Term) ?? await _userRepository.GetByUsernameAsync(request.Term);
 
             if (user == null)
             {
