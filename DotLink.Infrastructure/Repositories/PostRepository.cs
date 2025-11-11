@@ -33,6 +33,14 @@ namespace DotLink.Infrastructure.Repositories
                     .FirstOrDefaultAsync(p => p.Id == postId);
         }
 
+        public async Task<List<Post>> SearchPostsAsync(string searchTerm)
+        {
+            return await _context.Posts
+                .Include(p => p.Author)
+                .Where(p => p.Title.Contains(searchTerm) || p.Content.Contains(searchTerm))
+                .ToListAsync();
+        }
+
         public Task UpdateAsync(Post post)
         {
             _context.Posts.Update(post);
