@@ -31,6 +31,13 @@ namespace DotLink.Infrastructure.Repositories
                 .FirstOrDefaultAsync(u => u.Email == email);
         }
 
+        public Task<User?> GetByUsernameAsync(string username)
+        {
+            return _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Username == username);
+        }
+
         public async Task AddAsync(User user)
         {
             _context.Users.Add(user);
