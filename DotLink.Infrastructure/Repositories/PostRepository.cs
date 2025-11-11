@@ -37,7 +37,7 @@ namespace DotLink.Infrastructure.Repositories
         {
             return await _context.Posts
                 .Include(p => p.Author)
-                .Where(p => p.Title.Contains(searchTerm) || p.Content.Contains(searchTerm))
+                .Where(p => p.Title.ToLower().Contains(searchTerm.ToLower()) || p.Content.ToLower().Contains(searchTerm.ToLower()))
                 .ToListAsync();
         }
 

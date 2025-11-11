@@ -41,7 +41,7 @@ namespace DotLink.Infrastructure.Repositories
         {
             return await _context.Users
                 .AsNoTracking()
-                .Where(u => u.Username.Contains(searchTerm) || u.FullName.Contains(searchTerm))
+                .Where(u => u.Username.ToLower().Contains(searchTerm.ToLower()) || u.FullName.ToLower().Contains(searchTerm.ToLower()))
                 .ToListAsync();
         }
 
