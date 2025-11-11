@@ -3,6 +3,7 @@ using System;
 using DotLink.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DotLink.Infrastructure.Migrations
 {
     [DbContext(typeof(DotLinkDbContext))]
-    partial class DotLinkDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251111194933_add first name and last name fields to User entity")]
+    partial class addfirstnameandlastnamefieldstoUserentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
