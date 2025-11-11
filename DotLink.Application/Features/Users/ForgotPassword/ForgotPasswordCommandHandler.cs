@@ -1,9 +1,11 @@
-﻿using MediatR;
+﻿using DotLink.Application.Configuration;
+using DotLink.Application.Repositories;
+using DotLink.Application.Services;
+using MediatR;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using DotLink.Application.Repositories;
-using DotLink.Application.Services;
 
 namespace DotLink.Application.Features.Users.ForgotPassword
 {
@@ -11,11 +13,16 @@ namespace DotLink.Application.Features.Users.ForgotPassword
     {
         private readonly IUserRepository _userRepository;
         private readonly IEmailService _emailService;
+        private readonly ClientSettings _clientSettings;
 
-        public ForgotPasswordCommandHandler(IUserRepository userRepository, IEmailService emailService)
+        public ForgotPasswordCommandHandler(
+            IUserRepository userRepository, 
+            IEmailService emailService,
+            IOptions<ClientSettings> clientSettings)
         {
             _userRepository = userRepository;
             _emailService = emailService;
+            _clientSettings = clientSettings.Value;
         }
 
         public async Task<Unit> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
@@ -34,7 +41,9 @@ namespace DotLink.Application.Features.Users.ForgotPassword
             user.SetPasswordResetToken(token, expiry);
             await _userRepository.UpdateAsync(user);
 
-            string resetLink = $"https://TO-DO/reset-password?token={token}&email={user.Email}";
+            string baseUrl = _clientSettings.BaseUrl.TrimEnd('/');
+
+            string resetLink = $"https://{baseUrl}/reset-password?token={token}&email={user.Email}";
 
             await _emailService.SendPasswordResetEmailAsync(user.Email, user.Username, resetLink);
 
