@@ -91,7 +91,6 @@ namespace DotLink.Api.Controllers
             {
                 return BadRequest(new { error = "Only JPEG and PNG images are allowed." });
             }
-          
 
             using var fileStream = file.OpenReadStream();
 
