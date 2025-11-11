@@ -36,6 +36,11 @@ namespace DotLink.Application.Features.Users.UpdateUserProfile
             {
                 user.UpdateBio(request.NewBio);
             }
+            if (!string.IsNullOrWhiteSpace(request.newFirstName) && !string.IsNullOrWhiteSpace(request.newLastName))
+            {
+                user.UpdateName(request.newFirstName, request.newLastName);
+            }
+                
 
             await _userRepository.UpdateAsync(user);
 

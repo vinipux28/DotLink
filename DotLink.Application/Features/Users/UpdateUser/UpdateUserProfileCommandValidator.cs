@@ -21,6 +21,16 @@ namespace DotLink.Application.Features.Users.UpdateUserProfile
                     .MustAsync(BeUniqueUsername).WithMessage("This username is already in use.");
             });
 
+            When(x => x.newFirstName != null || x.newLastName != null, () =>
+            {
+                RuleFor(x => x.newFirstName)
+                    .NotEmpty().WithMessage("First name cannot be empty.")
+                    .When(x => x.newFirstName != null);
+                RuleFor(x => x.newLastName)
+                    .NotEmpty().WithMessage("Last name cannot be empty.")
+                    .When(x => x.newLastName != null);
+            });
+
             RuleFor(x => x)
                 .Must(x => !string.IsNullOrWhiteSpace(x.NewUsername) || x.NewBio != null)
                 .WithMessage("At least one field must be provided for an update.");
