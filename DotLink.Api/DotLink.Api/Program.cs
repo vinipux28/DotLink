@@ -1,4 +1,5 @@
 using DotLink.Api.Filters;
+using DotLink.Application.Configuration;
 using DotLink.Application.Features.Users.RegisterUser;
 using DotLink.Application.PipelineBehaviors;
 using DotLink.Application.Repositories;
@@ -76,6 +77,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostVoteRepository, PostVoteRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
+builder.Services.AddTransient<IEmailService, EmailServiceConsole>();
+
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IPostRepository).Assembly));
 
@@ -122,6 +125,11 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.Configure<ClientSettings>(
+    builder.Configuration.GetSection(ClientSettings.SectionName)
+);
+
 
 var app = builder.Build();
 
