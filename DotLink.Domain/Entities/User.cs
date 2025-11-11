@@ -18,6 +18,10 @@ namespace DotLink.Domain.Entities
         public string? ProfilePictureKey { get; private set; }
         public string? Bio { get; private set; }
 
+        public string? PasswordResetToken { get; private set; }
+        public DateTime? PasswordResetTokenExpiry { get; private set; }
+
+
         public ICollection<Post> Posts { get; private set; } = new List<Post>();
         public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
         public ICollection<PostVote> Votes { get; private set; } = new List<PostVote>();
@@ -70,6 +74,24 @@ namespace DotLink.Domain.Entities
             string newHash = HashPassword(newPassword);
 
             this.PasswordHash = newHash;
+            this.UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void SetPasswordResetToken(string token, DateTime expiry)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                throw new ArgumentException("Token cannot be null or empty.", nameof(token));
+            }
+            this.PasswordResetToken = token;
+            this.PasswordResetTokenExpiry = expiry;
+            this.UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void ClearPasswordResetToken()
+        {
+            this.PasswordResetToken = null;
+            this.PasswordResetTokenExpiry = null;
             this.UpdatedAt = DateTime.UtcNow;
         }
 
