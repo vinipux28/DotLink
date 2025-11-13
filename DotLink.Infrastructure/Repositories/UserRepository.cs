@@ -38,6 +38,15 @@ namespace DotLink.Infrastructure.Repositories
                 .FirstOrDefaultAsync(u => u.Username == username);
         }
 
+        public async Task<List<User>> SearchUsersAsync(string normalizedSearchTerm)
+        {
+            return await _context.Users
+                .AsNoTracking()
+                .Include(u => u.Posts)
+                .Where(u => u.Username.ToLower().Contains(normalizedSearchTerm) || (u.FirstName + " " + u.LastName).ToLower().Contains(normalizedSearchTerm))
+                .ToListAsync();
+        }
+
         public async Task AddAsync(User user)
         {
             _context.Users.Add(user);

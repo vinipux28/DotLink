@@ -11,6 +11,8 @@ namespace DotLink.Domain.Entities
      public class User
     {
         public Guid Id { get; init; }
+        public string FirstName { get; private set; } = String.Empty;
+        public string LastName { get; private set; } = String.Empty;
         public string Username { get; private set; } = String.Empty;
         public string Email { get; private set; } = String.Empty;
         public string PasswordHash { get; private set; } = String.Empty;
@@ -37,6 +39,20 @@ namespace DotLink.Domain.Entities
             UpdatedAt = DateTime.UtcNow;
         }
 
+        public void UpdateName(string firstName, string lastName)
+        {
+            if (string.IsNullOrWhiteSpace(firstName))
+            {
+                throw new ArgumentException("First name cannot be empty.", nameof(firstName));
+            }
+            if (string.IsNullOrWhiteSpace(lastName))
+            {
+                throw new ArgumentException("Last name cannot be empty.", nameof(lastName));
+            }
+            FirstName = firstName;
+            LastName = lastName;
+            UpdatedAt = DateTime.UtcNow;
+        }
         public void UpdateUsername(string newUsername)
         {
             if (string.IsNullOrWhiteSpace(newUsername))
