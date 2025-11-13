@@ -1,6 +1,7 @@
 ﻿using DotLink.Application.Repositories;
 using DotLink.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,20 +12,18 @@ namespace DotLink.Application.Features.Search
 {
     public class CompositeSearchQueryHandler : IRequestHandler<CompositeSearchQuery, List<SearchResultItem>>
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IPostRepository _postRepository;
-        public CompositeSearchQueryHandler(IUserRepository userRepository, IPostRepository postRepository)
+        private readonly IServiceScopeFactory _scopeFactory;
+        public CompositeSearchQueryHandler(IServiceScopeFactory scopeFactory)
         {
-            _userRepository = userRepository;
-            _postRepository = postRepository;
+            _scopeFactory = scopeFactory;
         }
 
         public async Task<List<SearchResultItem>> Handle(CompositeSearchQuery request, CancellationToken cancellationToken)
         {
             var normalizedSearchTerm = request.SearchTerm.ToLower();
 
-            var users = _userRepository.SearchUsersAsync(normalizedSearchTerm);
-            var posts = _postRepository.SearchPostsAsync(normalizedSearchTerm);
+            var users = SearchUsersInNewScope(normalizedSearchTerm);
+            var posts = SearchPostsInNewScope(normalizedSearchTerm);
             await Task.WhenAll(
                 users,
                 posts
@@ -41,6 +40,24 @@ namespace DotLink.Application.Features.Search
 
             return combinedResults;
 
+        }
+
+        private async Task<List<User>> SearchUsersInNewScope(string searchTerm)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var repo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+                return await repo.SearchUsersAsync(searchTerm);
+            }
+        }
+
+        private async Task<List<Post>> SearchPostsInNewScope(string searchTerm)
+        {
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var repo = scope.ServiceProvider.GetRequiredService<IPostRepository>();
+                return await repo.SearchPostsAsync(searchTerm);
+            }
         }
 
 
