@@ -44,12 +44,17 @@ namespace DotLink.Application.Features.Search
 
         private SearchResultItem MapUserToSearchResultItem(User user, string searchTerm)
         {
+            var relevanceScore = 0.5;
+            if (user.Username.ToLower() == searchTerm.ToLower()) relevanceScore += 0.3;
+            if (user.Bio != null && user.Bio.ToLower().Contains(searchTerm.ToLower())) relevanceScore += 0.2;
+            relevanceScore += 0.1 * Math.Sqrt(user.Posts.Count);
+
             return new SearchResultItem(
                 user.Id,
                 EntityType.User,
                 user.Username,
-                user.Bio.Length > 100 ? user.Bio.Substring(0, 100) + "..." : user.Bio,
-                1.0,
+                (user.Bio is not null && user.Bio.Length > 100) ? user.Bio.Substring(0, 100) + "..." : user.Bio,
+                relevanceScore,
                 user.ProfilePictureKey
             );
         }
