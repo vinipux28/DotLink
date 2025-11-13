@@ -33,13 +33,13 @@ namespace DotLink.Infrastructure.Repositories
                     .FirstOrDefaultAsync(p => p.Id == postId);
         }
 
-        public async Task<List<Post>> SearchPostsAsync(string searchTerm)
+        public async Task<List<Post>> SearchPostsAsync(string normizedSearchTerm)
         {
             return await _context.Posts
                 .AsNoTracking()
                 .Include(p => p.Author)
                 .Include(p => p.PostVotes)
-                .Where(p => p.Title.ToLower().Contains(searchTerm.ToLower()) || p.Content.ToLower().Contains(searchTerm.ToLower()))
+                .Where(p => p.Title.ToLower().Contains(normizedSearchTerm) || p.Content.ToLower().Contains(normizedSearchTerm))
                 .ToListAsync();
         }
 

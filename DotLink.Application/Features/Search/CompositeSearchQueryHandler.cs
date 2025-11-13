@@ -21,17 +21,19 @@ namespace DotLink.Application.Features.Search
 
         public async Task<List<SearchResultItem>> Handle(CompositeSearchQuery request, CancellationToken cancellationToken)
         {
-            var users = _userRepository.SearchUsersAsync(request.SearchTerm);
-            var posts = _postRepository.SearchPostsAsync(request.SearchTerm);
+            var normalizedSearchTerm = request.SearchTerm.ToLower();
+
+            var users = _userRepository.SearchUsersAsync(normalizedSearchTerm);
+            var posts = _postRepository.SearchPostsAsync(normalizedSearchTerm);
             await Task.WhenAll(
                 users,
                 posts
             );
 
             var combinedResults = (await users)
-                                        .Select(u => MapUserToSearchResultItem(u, request.SearchTerm))
+                                        .Select(u => MapUserToSearchResultItem(u, normalizedSearchTerm))
                                         .Concat(
-                                            (await posts).Select(p => MapPostToSearchResultItem(p, request.SearchTerm))
+                                            (await posts).Select(p => MapPostToSearchResultItem(p, normalizedSearchTerm))
                                         )
                                         .OrderByDescending(r => r.RelevanceScore)
                                         .Take(50)
@@ -42,11 +44,11 @@ namespace DotLink.Application.Features.Search
         }
 
 
-        private SearchResultItem MapUserToSearchResultItem(User user, string searchTerm)
+        private SearchResultItem MapUserToSearchResultItem(User user, string normalizedSearchTerm)
         {
             var relevanceScore = 0.5;
-            if (user.Username.ToLower() == searchTerm.ToLower()) relevanceScore += 0.3;
-            if (user.Bio != null && user.Bio.ToLower().Contains(searchTerm.ToLower())) relevanceScore += 0.2;
+            if (user.Username.ToLower() == normalizedSearchTerm) relevanceScore += 0.3;
+            if (user.Bio != null && user.Bio.ToLower().Contains(normalizedSearchTerm)) relevanceScore += 0.2;
             relevanceScore += 0.1 * Math.Sqrt(user.Posts.Count);
 
             return new SearchResultItem(
@@ -59,11 +61,11 @@ namespace DotLink.Application.Features.Search
             );
         }
 
-        private SearchResultItem MapPostToSearchResultItem(Post post, string searchTerm)
+        private SearchResultItem MapPostToSearchResultItem(Post post, string normalizedSearchTerm)
         {
             var relevanceScore = 0.5;
-            if (post.Title.ToLower() == searchTerm.ToLower()) relevanceScore += 0.2;
-            if (post.Content.ToLower().Contains(searchTerm.ToLower())) relevanceScore += 0.1;
+            if (post.Title.ToLower() == normalizedSearchTerm) relevanceScore += 0.2;
+            if (post.Content.ToLower().Contains(normalizedSearchTerm)) relevanceScore += 0.1;
             relevanceScore += 0.1 * Math.Sqrt(post.PostVotes.Count);
 
             return new SearchResultItem(

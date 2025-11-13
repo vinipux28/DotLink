@@ -37,12 +37,12 @@ namespace DotLink.Infrastructure.Repositories
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Username == username);
         }
-        public async Task<List<User>> SearchUsersAsync(string searchTerm)
+        public async Task<List<User>> SearchUsersAsync(string normalizedSearchTerm)
         {
             return await _context.Users
                 .AsNoTracking()
                 .Include(u => u.Posts)
-                .Where(u => u.Username.ToLower().Contains(searchTerm.ToLower()) || u.FullName.ToLower().Contains(searchTerm.ToLower()))
+                .Where(u => u.Username.ToLower().Contains(normalizedSearchTerm) || u.FullName.ToLower().Contains(normalizedSearchTerm))
                 .ToListAsync();
         }
 
