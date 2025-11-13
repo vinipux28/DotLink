@@ -1,4 +1,5 @@
 ﻿using DotLink.Application.Repositories;
+using DotLink.Domain.Entities;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -27,10 +28,10 @@ namespace DotLink.Application.Features.Search
                 posts
             );
 
-            var combinedResults = users.Result
-                                        .Select(u => new SearchResultItem(u))
+            var combinedResults = (await users)
+                                        .Select(u => MapUserToSearchResultItem(u))
                                         .Concat(
-                                            posts.Result.Select(p => new SearchResultItem(p))
+                                            (await posts).Select(p => MapPostToSearchResultItem(p))
                                         )
                                         .OrderByDescending(r => r.RelevanceScore)
                                         .Take(50)
@@ -38,6 +39,31 @@ namespace DotLink.Application.Features.Search
 
             return combinedResults;
 
+        }
+
+
+        private SearchResultItem MapUserToSearchResultItem(User user)
+        {
+            return new SearchResultItem(
+                user.Id,
+                EntityType.User,
+                user.Username,
+                user.Bio.Length > 100 ? user.Bio.Substring(0, 100) + "..." : user.Bio,
+                1.0,
+                user.ProfilePictureKey
+            );
+        }
+
+        private SearchResultItem MapPostToSearchResultItem(Post post)
+        {
+            return new SearchResultItem(
+                post.Id,
+                EntityType.Post,
+                post.Title,
+                post.Content.Length > 100 ? post.Content.Substring(0, 100) + "..." : post.Content,
+                1.0,
+                null
+            );
         }
     }
 }
