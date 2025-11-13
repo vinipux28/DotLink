@@ -36,7 +36,9 @@ namespace DotLink.Infrastructure.Repositories
         public async Task<List<Post>> SearchPostsAsync(string searchTerm)
         {
             return await _context.Posts
+                .AsNoTracking()
                 .Include(p => p.Author)
+                .Include(p => p.PostVotes)
                 .Where(p => p.Title.ToLower().Contains(searchTerm.ToLower()) || p.Content.ToLower().Contains(searchTerm.ToLower()))
                 .ToListAsync();
         }

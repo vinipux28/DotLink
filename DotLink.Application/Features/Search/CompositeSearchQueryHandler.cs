@@ -29,9 +29,9 @@ namespace DotLink.Application.Features.Search
             );
 
             var combinedResults = (await users)
-                                        .Select(u => MapUserToSearchResultItem(u))
+                                        .Select(u => MapUserToSearchResultItem(u, request.SearchTerm))
                                         .Concat(
-                                            (await posts).Select(p => MapPostToSearchResultItem(p))
+                                            (await posts).Select(p => MapPostToSearchResultItem(p, request.SearchTerm))
                                         )
                                         .OrderByDescending(r => r.RelevanceScore)
                                         .Take(50)
@@ -42,7 +42,7 @@ namespace DotLink.Application.Features.Search
         }
 
 
-        private SearchResultItem MapUserToSearchResultItem(User user)
+        private SearchResultItem MapUserToSearchResultItem(User user, string searchTerm)
         {
             return new SearchResultItem(
                 user.Id,
@@ -54,16 +54,21 @@ namespace DotLink.Application.Features.Search
             );
         }
 
-        private SearchResultItem MapPostToSearchResultItem(Post post)
+        private SearchResultItem MapPostToSearchResultItem(Post post, string searchTerm)
         {
+            var relevanceScore = 0.5;
+            if (post.Title.ToLower() == searchTerm.ToLower()) relevanceScore += 0.2;
+            if (post.Content.ToLower().Contains(searchTerm.ToLower())) relevanceScore += 0.1;
+            relevanceScore += 0.1 * Math.Sqrt(post.PostVotes.Count);
+
             return new SearchResultItem(
                 post.Id,
                 EntityType.Post,
                 post.Title,
                 post.Content.Length > 100 ? post.Content.Substring(0, 100) + "..." : post.Content,
-                1.0,
+                relevanceScore,
                 null
-            );
+            );  
         }
     }
 }

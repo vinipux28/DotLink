@@ -41,6 +41,7 @@ namespace DotLink.Infrastructure.Repositories
         {
             return await _context.Users
                 .AsNoTracking()
+                .Include(u => u.Posts)
                 .Where(u => u.Username.ToLower().Contains(searchTerm.ToLower()) || u.FullName.ToLower().Contains(searchTerm.ToLower()))
                 .ToListAsync();
         }
