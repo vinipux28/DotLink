@@ -48,6 +48,7 @@ namespace DotLink.Application.Features.Search
         {
             var relevanceScore = 0.5;
             if (user.Username.ToLower() == normalizedSearchTerm) relevanceScore += 0.3;
+            if ((user.FirstName + " " + user.LastName).ToLower().Contains(normalizedSearchTerm)) relevanceScore += 0.2;
             if (user.Bio != null && user.Bio.ToLower().Contains(normalizedSearchTerm)) relevanceScore += 0.2;
             relevanceScore += 0.1 * Math.Sqrt(user.Posts.Count);
 

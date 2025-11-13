@@ -13,7 +13,6 @@ namespace DotLink.Domain.Entities
         public Guid Id { get; init; }
         public string FirstName { get; private set; } = String.Empty;
         public string LastName { get; private set; } = String.Empty;
-        public string FullName => $"{FirstName} {LastName}";
         public string Username { get; private set; } = String.Empty;
         public string Email { get; private set; } = String.Empty;
         public string PasswordHash { get; private set; } = String.Empty;
