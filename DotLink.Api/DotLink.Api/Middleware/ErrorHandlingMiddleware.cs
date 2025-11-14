@@ -2,7 +2,8 @@
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Text.Json;
-using FluentValidation; // Для доступа к ValidationException
+using FluentValidation;
+using DotLink.Application.Exceptions;
 
 namespace DotLink.Api.Middleware
 {
@@ -37,18 +38,18 @@ namespace DotLink.Api.Middleware
 
             switch (exception)
             {
-                case ValidationException validationException:
+                case DotLinkValidationException validationException:
                     statusCode = HttpStatusCode.BadRequest; // 400
                     title = "Validation Error";
                     break;
 
-                case NotFoundException notFoundException:
+                case DotLinkNotFoundException notFoundException:
                     statusCode = HttpStatusCode.NotFound; // 404
                     title = "Resource Not Found";
                     detail = notFoundException.Message;
                     break;
 
-                case UnauthorizedAccessException unauthorizedAccessException:
+                case DotLinkUnauthorizedAccessException unauthorizedAccessException:
                     statusCode = HttpStatusCode.Forbidden; // 403
                     title = "Access Denied";
                     detail = unauthorizedAccessException.Message;
