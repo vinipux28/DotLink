@@ -24,7 +24,7 @@ namespace DotLink.Application.Features.Users.UpdateUserProfile
 
             if (user is null)
             {
-                throw new Exception("User not found.");
+                throw new DotLink.Application.Exceptions.DotLinkNotFoundException("User", request.UserId);
             }
 
             if (!string.IsNullOrWhiteSpace(request.NewUsername))

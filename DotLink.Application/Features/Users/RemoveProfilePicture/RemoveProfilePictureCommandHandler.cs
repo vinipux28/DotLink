@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotLink.Application.Repositories;
 using DotLink.Application.Services;
+using DotLink.Application.Exceptions;
 
 namespace DotLink.Application.Features.Users.RemoveProfilePicture
 {
@@ -21,7 +22,7 @@ namespace DotLink.Application.Features.Users.RemoveProfilePicture
         public async Task<Unit> Handle(RemoveProfilePictureCommand request, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByIdAsync(request.UserId)
-                        ?? throw new ApplicationException("User not found.");
+                        ?? throw new DotLinkNotFoundException("User", request.UserId);
 
             if (string.IsNullOrWhiteSpace(user.ProfilePictureKey))
             {

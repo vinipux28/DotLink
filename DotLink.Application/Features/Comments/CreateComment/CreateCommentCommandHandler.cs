@@ -1,4 +1,5 @@
-﻿using DotLink.Application.Repositories;
+﻿using DotLink.Application.Exceptions;
+using DotLink.Application.Repositories;
 using DotLink.Domain.Entities;
 using MediatR;
 using System;
@@ -23,7 +24,7 @@ namespace DotLink.Application.Features.Comments.CreateComment
             var postExists = await _postRepository.GetByIdAsync(request.PostId);
             if (postExists is null)
             {
-                throw new Exception($"Post with ID {request.PostId} not found.");
+                throw new DotLinkNotFoundException("Post", request.PostId);
             }
 
             if (request.ParentCommentId.HasValue)
@@ -31,12 +32,12 @@ namespace DotLink.Application.Features.Comments.CreateComment
                 var parentComment = await _commentRepository.GetByIdAsync(request.ParentCommentId.Value);
                 if (parentComment is null)
                 {
-                    throw new Exception($"Parent comment with ID {request.ParentCommentId.Value} not found.");
+                    throw new DotLinkNotFoundException("Comment", request.ParentCommentId.Value);
                 }
 
                 if (parentComment.PostId != request.PostId)
                 {
-                    throw new Exception("Cannot reply to a comment that belongs to a different post.");
+                    throw new Exception("Cannot reply to a comment that belongs to a different post."); // TO-Do: Create a specific exception for this case
                 }
             }
 

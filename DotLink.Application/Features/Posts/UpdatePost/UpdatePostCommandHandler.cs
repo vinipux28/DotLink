@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DotLink.Application.Repositories;
+using DotLink.Application.Exceptions;
 
 namespace DotLink.Application.Features.Posts.UpdatePost
 {
@@ -22,12 +23,12 @@ namespace DotLink.Application.Features.Posts.UpdatePost
 
             if (post is null)
             {
-                throw new Exception($"Post with ID {request.PostId} not found.");
+                throw new DotLinkNotFoundException("Post", request.PostId);
             }
 
             if (post.AuthorId != request.UserId)
             {
-                throw new UnauthorizedAccessException("Only author is allowed to edit this post.");
+                throw new DotLinkUnauthorizedAccessException("Only author is allowed to edit this post.");
             }
 
             post.UpdateTitle(request.Title);

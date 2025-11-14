@@ -1,4 +1,5 @@
-﻿using DotLink.Application.Repositories;
+﻿using DotLink.Application.Exceptions;
+using DotLink.Application.Repositories;
 using DotLink.Application.Services;
 using MediatR;
 using System.Threading;
@@ -23,14 +24,14 @@ namespace DotLink.Application.Features.Users.LoginUser
 
             if (user == null)
             {
-                throw new UnauthorizedAccessException("Incorrect login or password");
+                throw new DotLinkUnauthorizedAccessException("Incorrect login or password");
             }
 
             bool isPasswordValid = user.VerifyPassword(request.Password);
 
             if (!isPasswordValid)
             {
-                throw new UnauthorizedAccessException("Incorrect login or password");
+                throw new DotLinkUnauthorizedAccessException("Incorrect login or password");
             }
 
             string token = _jwtService.GenerateToken(user);

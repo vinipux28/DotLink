@@ -22,7 +22,7 @@ namespace DotLink.Application.Features.Users.RegisterUser
 
             if (existingUser != null)
             {
-                throw new InvalidOperationException($"Пользователь с Email '{request.Email}' уже существует.");
+                throw new InvalidOperationException("User with such email already exists"); // TO-DO: Create a specific exception for this case
             }
 
             var passwordHash = User.HashPassword(request.Password);

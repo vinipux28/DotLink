@@ -1,4 +1,5 @@
-﻿using DotLink.Application.Repositories;
+﻿using DotLink.Application.Exceptions;
+using DotLink.Application.Repositories;
 using MediatR;
 using System;
 using System.Threading;
@@ -26,7 +27,7 @@ namespace DotLink.Application.Features.Posts.DeletePost
 
             if (post.AuthorId != request.UserId)
             {
-                throw new UnauthorizedAccessException("Only author is allowed to delete this post.");
+                throw new DotLinkUnauthorizedAccessException("Only author is allowed to delete this post.");
             }
 
             await _postRepository.DeleteAsync(post);

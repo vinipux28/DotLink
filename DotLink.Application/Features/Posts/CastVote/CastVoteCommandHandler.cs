@@ -23,7 +23,7 @@ namespace DotLink.Application.Features.Posts.CastVote
             var postExists = await _postRepository.GetByIdAsync(request.PostId);
             if (postExists == null)
             {
-                throw new Exception($"Post with ID {request.PostId} not found.");
+                throw new DotLink.Application.Exceptions.DotLinkNotFoundException("Post", request.PostId);
             }
 
             if (request.IsUpvote is null)
