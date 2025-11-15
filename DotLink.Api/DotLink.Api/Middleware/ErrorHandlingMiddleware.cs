@@ -69,6 +69,9 @@ namespace DotLink.Api.Middleware
                     detail = conflictException.Message;
                     break;
 
+                default:
+                    // For unhandled exceptions, keep the default 500 status code
+                    break;
             }
 
             context.Response.StatusCode = (int)statusCode;
