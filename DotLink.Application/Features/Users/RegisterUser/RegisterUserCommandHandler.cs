@@ -1,6 +1,7 @@
 ﻿using DotLink.Application.Repositories;
 using DotLink.Domain.Entities;
 using MediatR;
+using DotLink.Application.Exceptions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,10 +20,14 @@ namespace DotLink.Application.Features.Users.RegisterUser
         public async Task<Guid> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
         {
             var existingUser = await _userRepository.GetByEmailAsync(request.Email);
-
             if (existingUser != null)
             {
-                throw new InvalidOperationException($"Пользователь с Email '{request.Email}' уже существует.");
+                throw new DotLinkConflictException("User", "email", request.Email);
+            }
+
+            existingUser = await _userRepository.GetByUsernameAsync(request.Username);
+            if (existingUser != null) {
+                throw new DotLinkConflictException("User", "username", request.Username);
             }
 
             var passwordHash = User.HashPassword(request.Password);

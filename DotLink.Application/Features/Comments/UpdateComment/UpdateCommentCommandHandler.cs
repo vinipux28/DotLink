@@ -1,4 +1,5 @@
-﻿using DotLink.Application.Repositories;
+﻿using DotLink.Application.Exceptions;
+using DotLink.Application.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace DotLink.Application.Features.Comments.UpdateComment
             var comment = await _commentRepository.GetByIdAsync(request.CommentId);
             if (comment is null)
             {
-                throw new Exception($"Comment with ID {request.CommentId} not found.");
+                throw new DotLinkNotFoundException("Comment", request.CommentId);
             }
             comment.UpdateContent(request.Content);
             await _commentRepository.UpdateAsync(comment);

@@ -7,6 +7,7 @@ using MediatR;
 using DotLink.Application.DTOs;
 using DotLink.Application.Repositories;
 using DotLink.Domain.Entities;
+using DotLink.Application.Exceptions;
 
 namespace DotLink.Application.Features.Posts.GetPostById
 {
@@ -24,7 +25,7 @@ namespace DotLink.Application.Features.Posts.GetPostById
             var post = await _postRepository.GetByIdAsync(request.PostId);
             if (post == null)
             {
-                throw new Exception($"Post with ID {request.PostId} not found.");
+                throw new DotLinkNotFoundException("Post", request.PostId);
             }
 
             var postDTO = new PostDTO(post);

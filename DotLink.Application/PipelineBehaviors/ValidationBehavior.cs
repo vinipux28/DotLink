@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotLink.Application.Exceptions;
 
 namespace DotLink.Application.PipelineBehaviors
 {
@@ -37,7 +38,7 @@ namespace DotLink.Application.PipelineBehaviors
 
                 if (failures.Count != 0)
                 {
-                    throw new ValidationException(failures);
+                    throw new DotLinkValidationException(failures);
                 }
             }
 

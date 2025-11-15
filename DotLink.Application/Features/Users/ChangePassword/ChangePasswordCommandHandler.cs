@@ -3,6 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DotLink.Application.Repositories;
+using DotLink.Application.Exceptions;
 
 namespace DotLink.Application.Features.Users.ChangePassword
 {
@@ -18,13 +19,13 @@ namespace DotLink.Application.Features.Users.ChangePassword
         public async Task<Unit> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
             var user = await _userRepository.GetByIdAsync(request.UserId)
-                        ?? throw new ApplicationException("User not found.");
+                        ?? throw new DotLinkNotFoundException("User", request.UserId);
 
             bool isOldPasswordCorrect = user.VerifyPassword(request.OldPassword);
 
             if (!isOldPasswordCorrect)
             {
-                throw new UnauthorizedAccessException("Invalid old password.");
+                throw new DotLinkUnauthorizedAccessException("Invalid old password.");
             }
 
             user.UpdatePassword(request.NewPassword);

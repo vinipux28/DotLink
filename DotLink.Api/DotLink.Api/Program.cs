@@ -1,4 +1,3 @@
-using DotLink.Api.Filters;
 using DotLink.Application.Configuration;
 using DotLink.Application.Features.Users.RegisterUser;
 using DotLink.Application.PipelineBehaviors;
@@ -91,8 +90,6 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 
 builder.Services.AddControllers(options =>
 {
-    options.Filters.Add<ValidationExceptionFilter>();
-    options.Filters.Add<UnauthorizedAccessExceptionFilter>();
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -132,6 +129,8 @@ builder.Services.Configure<ClientSettings>(
 
 
 var app = builder.Build();
+
+app.UseMiddleware<DotLink.Api.Middleware.ErrorHandlingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

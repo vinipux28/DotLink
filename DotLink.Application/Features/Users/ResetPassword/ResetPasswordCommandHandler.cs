@@ -3,6 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using DotLink.Application.Repositories;
+using DotLink.Application.Exceptions;
 
 namespace DotLink.Application.Features.Users.ResetPassword
 {
@@ -21,7 +22,7 @@ namespace DotLink.Application.Features.Users.ResetPassword
 
             if (user == null)
             {
-                throw new ApplicationException("Invalid reset request.");
+                throw new DotLinkNotFoundException("User", request.Email);
             }
 
             bool isTokenValid = !string.IsNullOrWhiteSpace(user.PasswordResetToken) &&
@@ -34,7 +35,7 @@ namespace DotLink.Application.Features.Users.ResetPassword
                 user.ClearPasswordResetToken();
                 await _userRepository.UpdateAsync(user);
 
-                throw new UnauthorizedAccessException("Invalid or expired password reset token.");
+                throw new DotLinkUnauthorizedAccessException("Invalid or expired password reset token.");
             }
 
             user.UpdatePassword(request.NewPassword);
