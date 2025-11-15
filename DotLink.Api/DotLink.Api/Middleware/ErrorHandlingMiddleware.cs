@@ -35,12 +35,20 @@ namespace DotLink.Api.Middleware
             var statusCode = HttpStatusCode.InternalServerError;
             var title = "Server Error";
             var detail = "An unexpected error occurred.";
+            IDictionary<string, string[]>? errors = null;
 
             switch (exception)
             {
                 case DotLinkValidationException validationException:
                     statusCode = HttpStatusCode.BadRequest; // 400
                     title = "Validation Error";
+                    detail = "One or more validation errors occurred.";
+                    errors = validationException.ValidationErrors
+                        .GroupBy(e => e.PropertyName)
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Select(e => e.ErrorMessage).ToArray()
+                        );
                     break;
 
                 case DotLinkNotFoundException notFoundException:
@@ -63,7 +71,8 @@ namespace DotLink.Api.Middleware
             {
                 status = (int)statusCode,
                 title = title,
-                detail = detail
+                detail = detail,
+                errors = errors
             };
 
             return context.Response.WriteAsync(JsonSerializer.Serialize(problemDetails));
