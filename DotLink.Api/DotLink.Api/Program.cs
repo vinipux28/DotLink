@@ -130,6 +130,8 @@ builder.Services.Configure<ClientSettings>(
 
 var app = builder.Build();
 
+app.UseMiddleware<DotLink.Api.Middleware.ErrorHandlingMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
