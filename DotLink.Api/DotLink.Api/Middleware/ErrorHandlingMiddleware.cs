@@ -63,6 +63,12 @@ namespace DotLink.Api.Middleware
                     detail = unauthorizedAccessException.Message;
                     break;
 
+                case DotLinkConflictException conflictException:
+                    statusCode = HttpStatusCode.Conflict;
+                    title = "Resource Conflict";
+                    detail = conflictException.Message;
+                    break;
+
             }
 
             context.Response.StatusCode = (int)statusCode;
