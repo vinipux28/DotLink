@@ -1,6 +1,7 @@
 ﻿using DotLink.Application.Repositories;
 using DotLink.Domain.Entities;
 using MediatR;
+using DotLink.Application.Exceptions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ namespace DotLink.Application.Features.Users.RegisterUser
 
             if (existingUser != null)
             {
-                throw new InvalidOperationException("User with such email already exists"); // TO-DO: Create a specific exception for this case
+                throw new DotLinkConflictException("User", "email", request.Email);
             }
 
             var passwordHash = User.HashPassword(request.Password);

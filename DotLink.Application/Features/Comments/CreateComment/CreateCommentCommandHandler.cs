@@ -37,7 +37,7 @@ namespace DotLink.Application.Features.Comments.CreateComment
 
                 if (parentComment.PostId != request.PostId)
                 {
-                    throw new Exception("Cannot reply to a comment that belongs to a different post."); // TO-Do: Create a specific exception for this case
+                    throw new DotLinkConflictException("Cannot reply to a comment that belongs to a different post.");
                 }
             }
 

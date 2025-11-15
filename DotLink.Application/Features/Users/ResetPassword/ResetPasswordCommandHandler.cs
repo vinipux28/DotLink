@@ -22,7 +22,7 @@ namespace DotLink.Application.Features.Users.ResetPassword
 
             if (user == null)
             {
-                throw new DotLink.Application.Exceptions.DotLinkNotFoundException("User", request.Email);
+                throw new DotLinkNotFoundException("User", request.Email);
             }
 
             bool isTokenValid = !string.IsNullOrWhiteSpace(user.PasswordResetToken) &&
