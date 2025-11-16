@@ -12,7 +12,7 @@ namespace DotLink.Application.DTOs
         public Guid Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        public UserDTO? Author { get; set; }
+        public UserDTOPartial? Author { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public int UpVotes { get; set; }

@@ -45,7 +45,7 @@ namespace DotLink.Infrastructure.Services
             {
                 Id = post.Id,
                 Content = post.Content,
-                Author = MapToUserDTO(post.Author), // TODO: chnage author to partial DTO
+                Author = MapToUserDTOPartial(post.Author),
                 CreatedAt = post.CreatedAt,
                 UpdatedAt = post.UpdatedAt ?? post.CreatedAt,
             };
