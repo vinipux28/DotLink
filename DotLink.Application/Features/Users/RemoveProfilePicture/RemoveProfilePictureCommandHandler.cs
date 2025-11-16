@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DotLink.Application.Repositories;
 using DotLink.Application.Services;
 using DotLink.Application.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace DotLink.Application.Features.Users.RemoveProfilePicture
 {
@@ -12,11 +13,13 @@ namespace DotLink.Application.Features.Users.RemoveProfilePicture
     {
         private readonly IUserRepository _userRepository;
         private readonly IFileStorageService _fileStorageService;
+        private readonly ILogger<RemoveProfilePictureCommandHandler> _logger;
 
-        public RemoveProfilePictureCommandHandler(IUserRepository userRepository, IFileStorageService fileStorageService)
+        public RemoveProfilePictureCommandHandler(IUserRepository userRepository, IFileStorageService fileStorageService, ILogger<RemoveProfilePictureCommandHandler> logger)
         {
             _userRepository = userRepository;
             _fileStorageService = fileStorageService;
+            _logger = logger;
         }
 
         public async Task<Unit> Handle(RemoveProfilePictureCommand request, CancellationToken cancellationToken)
@@ -26,6 +29,7 @@ namespace DotLink.Application.Features.Users.RemoveProfilePicture
 
             if (string.IsNullOrWhiteSpace(user.ProfilePictureKey))
             {
+                _logger.LogInformation("No profile picture to remove for user {UserId}", user.Id);
                 return Unit.Value;
             }
 
@@ -34,6 +38,8 @@ namespace DotLink.Application.Features.Users.RemoveProfilePicture
             user.UpdateProfilePictureKey(null);
 
             await _userRepository.UpdateAsync(user);
+
+            _logger.LogInformation("Removed profile picture for user {UserId}", user.Id);
 
             return Unit.Value;
         }

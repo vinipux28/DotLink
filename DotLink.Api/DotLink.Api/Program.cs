@@ -12,102 +12,121 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Text;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.Hosting.Lifetime", Serilog.Events.LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .Enrich.WithMachineName()
+    .WriteTo.Console(
+        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}")
+    .WriteTo.File(
+        "logs/dotlink-log-.txt",
+        rollingInterval: RollingInterval.Day,
+        outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {Level:u3}] {SourceContext} {Message:lj}{NewLine}{Exception}")
+    .CreateLogger();
 
-
-
-builder.Services.AddScoped<IJwtService, JwtService>();
-builder.Services.AddScoped<IFileStorageService>(provider =>
+try
 {
-    var env = provider.GetRequiredService<IWebHostEnvironment>();
+    Log.Information("Starting DotLink API web host");
 
-    var storageSettings = builder.Configuration.GetSection("StorageSettings");
-    var relativePathSegment = storageSettings["LocalStoragePath"] ?? "uploads";
+    var builder = WebApplication.CreateBuilder(args);
 
-    var localStorageRoot = env.WebRootPath;
+    builder.Host.UseSerilog();
 
-    var localStoragePath = Path.Combine(localStorageRoot, relativePathSegment);
-
-    if (!Directory.Exists(localStoragePath))
+    builder.Services.AddScoped<IJwtService, JwtService>();
+    builder.Services.AddScoped<IFileStorageService>(provider =>
     {
-        Directory.CreateDirectory(localStoragePath);
-    }
+        var env = provider.GetRequiredService<IWebHostEnvironment>();
 
-    return new LocalFileStorageService(localStoragePath);
-});
+        var storageSettings = builder.Configuration.GetSection("StorageSettings");
+        var relativePathSegment = storageSettings["LocalStoragePath"] ?? "uploads";
 
+        var localStorageRoot = env.WebRootPath;
 
-var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
+        var localStoragePath = Path.Combine(localStorageRoot, relativePathSegment);
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = true;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidateAudience = true,
-        ValidAudience = jwtSettings["Audience"],
-        ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
-    };
-});
-builder.Services.AddAuthorization();
+        if (!Directory.Exists(localStoragePath))
+        {
+            Directory.CreateDirectory(localStoragePath);
+        }
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-builder.Services.AddDbContext<DotLinkDbContext>(options =>
-    options.UseNpgsql(connectionString)
-);
-
-builder.Services.AddScoped<IPostRepository, PostRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IPostVoteRepository, PostVoteRepository>();
-builder.Services.AddScoped<ICommentRepository, CommentRepository>();
-
-builder.Services.AddTransient<IEmailService, EmailServiceConsole>();
-
-
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IPostRepository).Assembly));
-
-builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserCommand).Assembly);
-
-
-builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
-
-
-builder.Services.AddControllers(options =>
-{
-});
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "DotLink API", Version = "v1" });
-
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter your JWT token: Bearer {token}"
+        return new LocalFileStorageService(localStoragePath);
     });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+
+    var jwtSettings = builder.Configuration.GetSection("Jwt");
+    var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
+
+    builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.RequireHttpsMetadata = true;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            ValidateIssuer = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidateAudience = true,
+            ValidAudience = jwtSettings["Audience"],
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+    builder.Services.AddAuthorization();
+
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+    builder.Services.AddDbContext<DotLinkDbContext>(options =>
+        options.UseNpgsql(connectionString)
+    );
+
+    builder.Services.AddScoped<IPostRepository, PostRepository>();
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IPostVoteRepository, PostVoteRepository>();
+    builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+
+    builder.Services.AddTransient<IEmailService, EmailServiceConsole>();
+
+
+    builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IPostRepository).Assembly));
+
+    builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserCommand).Assembly);
+
+
+    builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+
+
+    builder.Services.AddControllers(options =>
+    {
+    });
+
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "DotLink API", Version = "v1" });
+
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Enter your JWT token: Bearer {token}"
+        });
+
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
     {
         {
             new OpenApiSecurityScheme
@@ -121,35 +140,44 @@ builder.Services.AddSwaggerGen(c =>
             new string[] {}
         }
     });
-});
-
-builder.Services.Configure<ClientSettings>(
-    builder.Configuration.GetSection(ClientSettings.SectionName)
-);
-
-
-var app = builder.Build();
-
-app.UseMiddleware<DotLink.Api.Middleware.ErrorHandlingMiddleware>();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "DotLink API V1");
-        c.ConfigObject.AdditionalItems["persistAuthorization"] = true;
     });
+
+    builder.Services.Configure<ClientSettings>(
+        builder.Configuration.GetSection(ClientSettings.SectionName)
+    );
+
+
+    var app = builder.Build();
+
+    app.UseMiddleware<DotLink.Api.Middleware.ErrorHandlingMiddleware>();
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "DotLink API V1");
+            c.ConfigObject.AdditionalItems["persistAuthorization"] = true;
+        });
+    }
+
+    app.UseHttpsRedirection();
+
+    app.UseAuthorization();
+
+    app.MapControllers();
+
+    app.Run();
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Host terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

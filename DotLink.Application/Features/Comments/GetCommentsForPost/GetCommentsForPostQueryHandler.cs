@@ -6,16 +6,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DotLink.Application.Features.Comments.GetCommentsForPost
 {
     public class GetCommentsForPostQueryHandler : IRequestHandler<GetCommentsForPostQuery, PaginatedResponse<CommentDTO>>
     {
         private readonly ICommentRepository _commentRepository;
+        private readonly ILogger<GetCommentsForPostQueryHandler> _logger;
 
-        public GetCommentsForPostQueryHandler(ICommentRepository commentRepository)
+        public GetCommentsForPostQueryHandler(ICommentRepository commentRepository, ILogger<GetCommentsForPostQueryHandler> logger)
         {
             _commentRepository = commentRepository;
+            _logger = logger;
         }
 
         public async Task<PaginatedResponse<CommentDTO>> Handle(GetCommentsForPostQuery request, CancellationToken cancellationToken)
@@ -27,6 +30,9 @@ namespace DotLink.Application.Features.Comments.GetCommentsForPost
             );
 
             var commentDTOs = comments.Select(c => new CommentDTO(c)).ToList();
+
+            _logger.LogInformation("Retrieved {Count} comments (total {TotalCount}) for post {PostId} (page {Page}, size {Size})",
+                commentDTOs.Count, totalCount, request.PostId, request.PageNumber, request.PageSize);
 
             return new PaginatedResponse<CommentDTO>(
                 commentDTOs,

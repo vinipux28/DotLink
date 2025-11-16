@@ -10,10 +10,12 @@ namespace DotLink.Api.Middleware
     public class ErrorHandlingMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ErrorHandlingMiddleware> _logger;
 
-        public ErrorHandlingMiddleware(RequestDelegate next)
+        public ErrorHandlingMiddleware(RequestDelegate next, ILogger<ErrorHandlingMiddleware> logger)
         {
             _next = next;
+            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -24,6 +26,15 @@ namespace DotLink.Api.Middleware
             }
             catch (Exception ex)
             {
+                // Log only unexpected server errors (those that will produce HTTP 500)
+                if (ex is not DotLinkValidationException
+                    && ex is not DotLinkNotFoundException
+                    && ex is not DotLinkUnauthorizedAccessException
+                    && ex is not DotLinkConflictException)
+                {
+                    _logger.LogError(ex, "An unexpected error occurred while processing the request.");
+                }
+
                 await HandleExceptionAsync(context, ex);
             }
         }

@@ -2,6 +2,7 @@
 using DotLink.Application.Repositories;
 using DotLink.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,11 +13,13 @@ namespace DotLink.Application.Features.Comments.CreateComment
     {
         private readonly ICommentRepository _commentRepository;
         private readonly IPostRepository _postRepository;
+        private readonly ILogger<CreateCommentCommandHandler> _logger;
 
-        public CreateCommentCommandHandler(ICommentRepository commentRepository, IPostRepository postRepository)
+        public CreateCommentCommandHandler(ICommentRepository commentRepository, IPostRepository postRepository, ILogger<CreateCommentCommandHandler> logger)
         {
             _commentRepository = commentRepository;
             _postRepository = postRepository;
+            _logger = logger;
         }
 
         public async Task<Guid> Handle(CreateCommentCommand request, CancellationToken cancellationToken)
@@ -50,6 +53,8 @@ namespace DotLink.Application.Features.Comments.CreateComment
             );
 
             await _commentRepository.AddAsync(newComment);
+
+            _logger.LogInformation("Comment {CommentId} created by User {UserId} on Post {PostId}", newComment.Id, request.UserId, request.PostId);
 
             return newComment.Id;
         }
