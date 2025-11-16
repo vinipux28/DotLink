@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DotLink.Application.Features.Users.ForgotPassword
 {
@@ -14,15 +15,18 @@ namespace DotLink.Application.Features.Users.ForgotPassword
         private readonly IUserRepository _userRepository;
         private readonly IEmailService _emailService;
         private readonly ClientSettings _clientSettings;
+        private readonly ILogger<ForgotPasswordCommandHandler> _logger;
 
         public ForgotPasswordCommandHandler(
             IUserRepository userRepository, 
             IEmailService emailService,
-            IOptions<ClientSettings> clientSettings)
+            IOptions<ClientSettings> clientSettings,
+            ILogger<ForgotPasswordCommandHandler> logger)
         {
             _userRepository = userRepository;
             _emailService = emailService;
             _clientSettings = clientSettings.Value;
+            _logger = logger;
         }
 
         public async Task<Unit> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
@@ -32,6 +36,7 @@ namespace DotLink.Application.Features.Users.ForgotPassword
             if (user == null)
             {
                 await Task.Delay(500, cancellationToken); // mock delay
+                _logger.LogInformation("Password reset requested for {Email} (no account matched)", request.Email);
                 return Unit.Value;
             }
 
@@ -46,6 +51,8 @@ namespace DotLink.Application.Features.Users.ForgotPassword
             string resetLink = $"https://{baseUrl}/reset-password?token={token}&email={user.Email}";
 
             await _emailService.SendPasswordResetEmailAsync(user.Email, user.Username, resetLink);
+
+            _logger.LogInformation("Password reset email sent to {Email} for user {UserId}", user.Email, user.Id);
 
             return Unit.Value;
         }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DotLink.Application.Repositories;
 using DotLink.Application.Services;
 using DotLink.Application.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace DotLink.Application.Features.Users.UploadProfilePicture
 {
@@ -12,11 +13,13 @@ namespace DotLink.Application.Features.Users.UploadProfilePicture
     {
         private readonly IUserRepository _userRepository;
         private readonly IFileStorageService _fileStorageService;
+        private readonly ILogger<UploadProfilePictureCommandHandler> _logger;
 
-        public UploadProfilePictureCommandHandler(IUserRepository userRepository, IFileStorageService fileStorageService)
+        public UploadProfilePictureCommandHandler(IUserRepository userRepository, IFileStorageService fileStorageService, ILogger<UploadProfilePictureCommandHandler> logger)
         {
             _userRepository = userRepository;
             _fileStorageService = fileStorageService;
+            _logger = logger;
         }
 
         public async Task<string> Handle(UploadProfilePictureCommand request, CancellationToken cancellationToken)
@@ -26,6 +29,7 @@ namespace DotLink.Application.Features.Users.UploadProfilePicture
 
             if (!string.IsNullOrWhiteSpace(user.ProfilePictureKey))
             {
+                _logger.LogInformation("Deleting existing profile picture {OldKey} for user {UserId}", user.ProfilePictureKey, user.Id);
                 await _fileStorageService.DeleteFileAsync(user.ProfilePictureKey);
             }
 
@@ -39,6 +43,8 @@ namespace DotLink.Application.Features.Users.UploadProfilePicture
             user.UpdateProfilePictureKey(newKey);
 
             await _userRepository.UpdateAsync(user);
+
+            _logger.LogInformation("User {UserId} uploaded new profile picture {Key}", user.Id, newKey);
 
             return newKey;
         }
