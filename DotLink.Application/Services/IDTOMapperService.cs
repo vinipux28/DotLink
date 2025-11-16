@@ -10,15 +10,15 @@ namespace DotLink.Application.Services
 {
     public interface IDTOMapperService
     {
-        abstract static UserDTO MapToUserDTO(User user);
+        abstract public UserDTO MapToUserDTO(User user);
 
-        abstract static UserDTOPartial MapToUserDTOPartial(User user);
+        abstract public UserDTOPartial MapToUserDTOPartial(User user);
 
-        abstract static PostDTO MapToPostDTO(Post post);
+        abstract public PostDTO MapToPostDTO(Post post);
 
-        abstract static PostDTOPartial MapToPostDTOPartial(Post post);
+        abstract public PostDTOPartial MapToPostDTOPartial(Post post);
 
-        abstract static CommentDTO MapToCommentDTO(Comment comment);
+        abstract public CommentDTO MapToCommentDTO(Comment comment);
 
     }
 }

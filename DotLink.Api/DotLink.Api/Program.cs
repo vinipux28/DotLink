@@ -96,6 +96,7 @@ try
     builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
     builder.Services.AddTransient<IEmailService, EmailServiceConsole>();
+    builder.Services.AddTransient<IDTOMapperService, DTOMapperService>();
 
 
     builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IPostRepository).Assembly));
