@@ -21,8 +21,8 @@ namespace DotLink.Infrastructure.Services
                 Id = user.Id,
                 Username = user.Username,
                 Email = user.Email,
-                //FirstName = user.FirstName,
-                //LastName = user.LastName, TODO: Add these fields to DTO if needed
+                FirstName = user.FirstName,
+                LastName = user.LastName,
                 Bio = user.Bio,
                 ProfilePictureKey = user.ProfilePictureKey,
                 CreatedAt = user.CreatedAt
