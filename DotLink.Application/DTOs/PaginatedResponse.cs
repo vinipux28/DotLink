@@ -11,12 +11,12 @@ namespace DotLink.Application.DTOs
         public IEnumerable<T> Data { get; }
 
         public PaginatedResponse(IEnumerable<T> data, int count, int pageNumber, int pageSize)
-        {
+        { 
+            Data = data;
             PageNumber = pageNumber;
             PageSize = pageSize;
+            TotalPages = count;
             TotalCount = count;
-            TotalPages = (int)Math.Ceiling(count / (double)pageSize);
-            Data = data;
         }
     }
 }

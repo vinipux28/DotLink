@@ -19,15 +19,7 @@ namespace DotLink.Application.DTOs
         public int DownVotes { get; set; }
 
 
-        public PostDTO(Post post)
-        {
-            Id = post.Id;
-            Title = post.Title;
-            Content = post.Content;
-            CreatedAt = post.CreatedAt;
-            Author = new UserDTO(post.Author);
-            UpVotes = post.PostVotes.Count(v => v.IsUpvote);
-            DownVotes = post.PostVotes.Count(v => !v.IsUpvote);
-        }
+        public PostDTO()
+        {}
     }
 }

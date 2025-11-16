@@ -19,20 +19,8 @@ namespace DotLink.Application.DTOs
         public DateTime CreatedAt { get; set; }
 
 
-        public UserDTO(User? user)
+        public UserDTO()
         {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user), "User cannot be null");
-            }
-            Id = user.Id;
-            Username = user.Username;
-            Email = user.Email;
-            Bio = user.Bio;
-            ProfilePictureKey = user.ProfilePictureKey;
-
-            CreatedAt = user.CreatedAt;
-            UpdatedAt = user.UpdatedAt;
         }
     }
 }

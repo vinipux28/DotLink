@@ -12,13 +12,7 @@ namespace DotLink.Application.DTOs
 
         public Guid? ParentCommentId { get; set; }
 
-        public CommentDTO(Comment comment)
-        {
-            Id = comment.Id;
-            Content = comment.Content;
-            CreatedAt = comment.CreatedAt;
-            Author = new UserDTOPartial(comment.Author);
-            ParentCommentId = comment.ParentCommentId;
-        }
+        public CommentDTO()
+        {}
     }
 }

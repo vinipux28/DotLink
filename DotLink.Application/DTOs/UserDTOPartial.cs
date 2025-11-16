@@ -14,15 +14,7 @@ namespace DotLink.Application.DTOs
         public string? ProfilePictureKey { get; set; }
 
 
-        public UserDTOPartial(User? user)
-        {
-            if (user == null)
-            {
-                throw new ArgumentNullException(nameof(user), "User cannot be null");
-            }
-            Id = user.Id;
-            Username = user.Username;
-            ProfilePictureKey = user.ProfilePictureKey;
-        }
+        public UserDTOPartial()
+        {}
     }
 }
