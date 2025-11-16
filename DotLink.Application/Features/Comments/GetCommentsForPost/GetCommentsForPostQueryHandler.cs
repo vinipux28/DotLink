@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using DotLink.Application.Services;
 
 namespace DotLink.Application.Features.Comments.GetCommentsForPost
 {
@@ -14,11 +15,13 @@ namespace DotLink.Application.Features.Comments.GetCommentsForPost
     {
         private readonly ICommentRepository _commentRepository;
         private readonly ILogger<GetCommentsForPostQueryHandler> _logger;
+        private readonly IDTOMapperService _mapperService;
 
-        public GetCommentsForPostQueryHandler(ICommentRepository commentRepository, ILogger<GetCommentsForPostQueryHandler> logger)
+        public GetCommentsForPostQueryHandler(ICommentRepository commentRepository, ILogger<GetCommentsForPostQueryHandler> logger, IDTOMapperService mapperService)
         {
             _commentRepository = commentRepository;
             _logger = logger;
+            _mapperService = mapperService;
         }
 
         public async Task<PaginatedResponse<CommentDTO>> Handle(GetCommentsForPostQuery request, CancellationToken cancellationToken)
@@ -29,7 +32,7 @@ namespace DotLink.Application.Features.Comments.GetCommentsForPost
                 request.PageSize
             );
 
-            var commentDTOs = comments.Select(c => new CommentDTO(c)).ToList();
+            var commentDTOs = comments.Select(c => _mapperService.MapToCommentDTO(c)).ToList();
 
             _logger.LogInformation("Retrieved {Count} comments (total {TotalCount}) for post {PostId} (page {Page}, size {Size})",
                 commentDTOs.Count, totalCount, request.PostId, request.PageNumber, request.PageSize);

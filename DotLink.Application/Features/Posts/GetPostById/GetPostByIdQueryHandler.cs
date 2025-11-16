@@ -9,6 +9,7 @@ using DotLink.Application.Repositories;
 using DotLink.Domain.Entities;
 using DotLink.Application.Exceptions;
 using Microsoft.Extensions.Logging;
+using DotLink.Application.Services;
 
 namespace DotLink.Application.Features.Posts.GetPostById
 {
@@ -16,10 +17,12 @@ namespace DotLink.Application.Features.Posts.GetPostById
     {
         private readonly IPostRepository _postRepository;
         private readonly ILogger<GetPostByIdQueryHandler> _logger;
-        public GetPostByIdQueryHandler(IPostRepository postRepository, ILogger<GetPostByIdQueryHandler> logger)
+        private readonly IDTOMapperService _mapperService;
+        public GetPostByIdQueryHandler(IPostRepository postRepository, ILogger<GetPostByIdQueryHandler> logger, IDTOMapperService mapperService)
         {
             _postRepository = postRepository;
             _logger = logger;
+            _mapperService = mapperService;
         }
 
 
@@ -32,7 +35,7 @@ namespace DotLink.Application.Features.Posts.GetPostById
                 throw new DotLinkNotFoundException("Post", request.PostId);
             }
 
-            var postDTO = new PostDTO(post);
+            var postDTO = _mapperService.MapToPostDTO(post);
 
             _logger.LogInformation("Post {PostId} retrieved", request.PostId);
 

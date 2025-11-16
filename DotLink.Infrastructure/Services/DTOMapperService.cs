@@ -14,7 +14,7 @@ namespace DotLink.Infrastructure.Services
     {
         public DTOMapperService() { }
 
-        public static UserDTO MapToUserDTO(User user)
+        public UserDTO MapToUserDTO(User user)
         {
             return new UserDTO
             {
@@ -29,7 +29,7 @@ namespace DotLink.Infrastructure.Services
             };
         }
 
-        public static UserDTOPartial MapToUserDTOPartial(User user)
+        public UserDTOPartial MapToUserDTOPartial(User user)
         {
             return new UserDTOPartial
             {
@@ -39,7 +39,7 @@ namespace DotLink.Infrastructure.Services
             };
         }
 
-        public static PostDTO MapToPostDTO(Post post)
+        public PostDTO MapToPostDTO(Post post)
         {
             return new PostDTO
             {
@@ -51,7 +51,7 @@ namespace DotLink.Infrastructure.Services
             };
         }
 
-        public static PostDTOPartial MapToPostDTOPartial(Post post)
+        public PostDTOPartial MapToPostDTOPartial(Post post)
         {
             return new PostDTOPartial
             {
@@ -61,7 +61,7 @@ namespace DotLink.Infrastructure.Services
             };
         }
 
-        public static CommentDTO MapToCommentDTO(Comment comment)
+        public CommentDTO MapToCommentDTO(Comment comment)
         {
             return new CommentDTO
             {

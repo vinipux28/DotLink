@@ -4,6 +4,7 @@ using DotLink.Application.Features.Users.ChangePassword;
 using DotLink.Application.Features.Users.RemoveProfilePicture;
 using DotLink.Application.Features.Users.UploadProfilePicture;
 using DotLink.Application.Repositories;
+using DotLink.Application.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +17,12 @@ namespace DotLink.Api.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IUserRepository _userRepository;
-        public UserController(IMediator mediator, IUserRepository userRepository)
+        private readonly IDTOMapperService _mapperService;
+        public UserController(IMediator mediator, IUserRepository userRepository, IDTOMapperService mapperService)
         {
             _mediator = mediator;
             _userRepository = userRepository;
+            _mapperService = mapperService;
         }
 
         [HttpGet("{id:guid}")]
@@ -30,7 +33,7 @@ namespace DotLink.Api.Controllers
             {
                 return NotFound();
             }
-            return Ok(new UserDTO(user));
+            return Ok(_mapperService.MapToUserDTO(user));
         }
 
         [Authorize]
@@ -45,7 +48,7 @@ namespace DotLink.Api.Controllers
             {
                 return NotFound();
             }
-            return Ok(new UserDTO(user));
+            return Ok(_mapperService.MapToUserDTO(user));
         }
 
 

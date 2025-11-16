@@ -5,16 +5,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotLink.Application.DTOs;
 using System.Collections.Generic;
+using DotLink.Application.Services;
 
 namespace DotLink.Application.Features.Comments.GetCommentReplies
 {
     public class GetCommentRepliesQueryHandler : IRequestHandler<GetCommentRepliesQuery, PaginatedResponse<CommentDTO>>
     {
         private readonly ICommentRepository _commentRepository;
+        private readonly IDTOMapperService _mapperService;
 
-        public GetCommentRepliesQueryHandler(ICommentRepository commentRepository)
+        public GetCommentRepliesQueryHandler(ICommentRepository commentRepository, IDTOMapperService mapperService)
         {
             _commentRepository = commentRepository;
+            _mapperService = mapperService;
         }
 
         public async Task<PaginatedResponse<CommentDTO>> Handle(GetCommentRepliesQuery request, CancellationToken cancellationToken)
@@ -25,7 +28,7 @@ namespace DotLink.Application.Features.Comments.GetCommentReplies
                 request.PageSize
             );
 
-            var commentDTOs = comments.Select(c => new CommentDTO(c)).ToList();
+            var commentDTOs = comments.Select(c => _mapperService.MapToCommentDTO(c)).ToList();
 
             return new PaginatedResponse<CommentDTO>(
                 commentDTOs,
