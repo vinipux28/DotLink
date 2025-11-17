@@ -17,6 +17,8 @@ namespace DotLink.Application.DTOs
         public string? Bio { get; set; }
         public string? ProfilePictureKey { get; set; }
 
+        public int FollowersCount { get; set; }
+
         public DateTime? UpdatedAt { get; set; }
         public DateTime CreatedAt { get; set; }
 
