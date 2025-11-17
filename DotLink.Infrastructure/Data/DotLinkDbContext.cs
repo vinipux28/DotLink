@@ -19,6 +19,7 @@ namespace DotLink.Infrastructure.Data
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<PostVote> PostVotes { get; set; }
+        public DbSet<UserFollow> UserFollows { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +42,16 @@ namespace DotLink.Infrastructure.Data
 
                 entity.HasIndex(u => u.Email).IsUnique();
                 entity.Property(u => u.Username).HasMaxLength(50).IsRequired();
+
+                entity.HasMany(u => u.Followers)
+                      .WithOne(f => f.Followee)
+                      .HasForeignKey(f => f.FolloweeId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasMany(u => u.Following)
+                      .WithOne(f => f.Follower)
+                      .HasForeignKey(f => f.FollowerId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Post>(entity =>
@@ -71,6 +82,21 @@ namespace DotLink.Infrastructure.Data
             modelBuilder.Entity<PostVote>(entity =>
             {
                 entity.HasKey(v => new { v.PostId, v.UserId });
+            });
+
+            modelBuilder.Entity<UserFollow>(entity =>
+            {
+                entity.HasKey(uf => new { uf.FollowerId, uf.FolloweeId });
+
+                entity.HasOne(uf => uf.Follower)
+                      .WithMany(u => u.Following)
+                      .HasForeignKey(uf => uf.FollowerId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(uf => uf.Followee)
+                      .WithMany(u => u.Followers)
+                      .HasForeignKey(uf => uf.FolloweeId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             base.OnModelCreating(modelBuilder);
