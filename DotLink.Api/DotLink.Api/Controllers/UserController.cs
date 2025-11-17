@@ -3,6 +3,9 @@ using DotLink.Application.DTOs;
 using DotLink.Application.Features.Users.ChangePassword;
 using DotLink.Application.Features.Users.RemoveProfilePicture;
 using DotLink.Application.Features.Users.UploadProfilePicture;
+using DotLink.Application.Features.Users.FollowUser;
+using DotLink.Application.Features.Users.UnfollowUser;
+using DotLink.Application.Features.Users.GetFollowers;
 using DotLink.Application.Repositories;
 using DotLink.Application.Services;
 using MediatR;
@@ -123,6 +126,51 @@ namespace DotLink.Api.Controllers
             await _mediator.Send(command);
 
             return NoContent();
+        }
+
+        [Authorize]
+        [HttpPost("{id:guid}/follow")]
+        public async Task<IActionResult> Follow(Guid id)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+
+            var command = new FollowUserCommand
+            {
+                FollowerId = userId,
+                FolloweeId = id
+            };
+
+            await _mediator.Send(command);
+
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpPost("{id:guid}/unfollow")]
+        public async Task<IActionResult> Unfollow(Guid id)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+
+            var command = new UnfollowUserCommand
+            {
+                FollowerId = userId,
+                FolloweeId = id
+            };
+
+            await _mediator.Send(command);
+
+            return NoContent();
+        }
+
+        // Get followers of a user
+        [HttpGet("{id:guid}/followers")]
+        public async Task<IActionResult> GetFollowers(Guid id)
+        {
+            var query = new GetFollowersQuery { UserId = id };
+            var followers = await _mediator.Send(query);
+            return Ok(followers);
         }
 
 
