@@ -29,11 +29,11 @@ namespace DotLink.Application.Features.Search
                 posts
             );
 
-            var combinedResults = (await users)
-                                        .Select(u => MapUserToSearchResultItem(u, normalizedSearchTerm))
-                                        .Concat(
-                                            (await posts).Select(p => MapPostToSearchResultItem(p, normalizedSearchTerm))
-                                        )
+            var userResults = (await users).Select(u => MapUserToSearchResultItem(u, normalizedSearchTerm, request.CurrentUserId));
+            var postResults = (await posts).Select(p => MapPostToSearchResultItem(p, normalizedSearchTerm, request.CurrentUserId));
+
+            var combinedResults = userResults
+                                        .Concat(postResults)
                                         .OrderByDescending(r => r.RelevanceScore)
                                         .Take(50)
                                         .ToList();
@@ -61,13 +61,24 @@ namespace DotLink.Application.Features.Search
         }
 
 
-        private SearchResultItem MapUserToSearchResultItem(User user, string normalizedSearchTerm)
+        private SearchResultItem MapUserToSearchResultItem(User user, string normalizedSearchTerm, Guid? currentUserId)
         {
             var relevanceScore = 0.5;
             if (user.Username.ToLower() == normalizedSearchTerm) relevanceScore += 0.3;
             if ((user.FirstName + " " + user.LastName).ToLower().Contains(normalizedSearchTerm)) relevanceScore += 0.2;
             if (user.Bio != null && user.Bio.ToLower().Contains(normalizedSearchTerm)) relevanceScore += 0.2;
             relevanceScore += 0.1 * Math.Sqrt(user.Posts.Count);
+
+            // boost if current user follows this user
+            if (currentUserId.HasValue)
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var repo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+                    var isFollowing = repo.IsFollowingAsync(currentUserId.Value, user.Id).GetAwaiter().GetResult();
+                    if (isFollowing) relevanceScore += 0.25; // boost weight for followed users
+                }
+            }
 
             return new SearchResultItem(
                 user.Id,
@@ -79,12 +90,23 @@ namespace DotLink.Application.Features.Search
             );
         }
 
-        private SearchResultItem MapPostToSearchResultItem(Post post, string normalizedSearchTerm)
+        private SearchResultItem MapPostToSearchResultItem(Post post, string normalizedSearchTerm, Guid? currentUserId)
         {
             var relevanceScore = 0.5;
             if (post.Title.ToLower() == normalizedSearchTerm) relevanceScore += 0.2;
             if (post.Content.ToLower().Contains(normalizedSearchTerm)) relevanceScore += 0.1;
             relevanceScore += 0.1 * Math.Sqrt(post.PostVotes.Count);
+
+            // boost if current user follows the post's author
+            if (currentUserId.HasValue)
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    var repo = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+                    var isFollowingAuthor = repo.IsFollowingAsync(currentUserId.Value, post.AuthorId).GetAwaiter().GetResult();
+                    if (isFollowingAuthor) relevanceScore += 0.2; // smaller boost for posts by followed authors
+                }
+            }
 
             return new SearchResultItem(
                 post.Id,
