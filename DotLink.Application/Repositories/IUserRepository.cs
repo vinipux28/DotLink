@@ -19,5 +19,8 @@ namespace DotLink.Application.Repositories
         Task FollowAsync(Guid followerId, Guid followeeId);
         Task UnfollowAsync(Guid followerId, Guid followeeId);
         Task<bool> IsFollowingAsync(Guid followerId, Guid followeeId);
+
+        // Retrieve follower relations
+        Task<List<UserFollow>> GetFollowersAsync(Guid userId);
     }
 }
