@@ -6,6 +6,7 @@ using DotLink.Application.Features.Users.UploadProfilePicture;
 using DotLink.Application.Features.Users.FollowUser;
 using DotLink.Application.Features.Users.UnfollowUser;
 using DotLink.Application.Features.Users.GetFollowers;
+using DotLink.Application.Features.Users.GetFollowings;
 using DotLink.Application.Repositories;
 using DotLink.Application.Services;
 using MediatR;
@@ -171,6 +172,15 @@ namespace DotLink.Api.Controllers
             var query = new GetFollowersQuery { UserId = id };
             var followers = await _mediator.Send(query);
             return Ok(followers);
+        }
+
+        // Get followings of a user
+        [HttpGet("{id:guid}/followings")]
+        public async Task<IActionResult> GetFollowings(Guid id)
+        {
+            var query = new GetFollowingsQuery { UserId = id };
+            var followings = await _mediator.Send(query);
+            return Ok(followings);
         }
 
 

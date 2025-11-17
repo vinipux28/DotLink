@@ -22,5 +22,6 @@ namespace DotLink.Application.Repositories
 
         // Retrieve follower relations
         Task<List<UserFollow>> GetFollowersAsync(Guid userId);
+        Task<List<UserFollow>> GetFollowingsAsync(Guid userId);
     }
 }

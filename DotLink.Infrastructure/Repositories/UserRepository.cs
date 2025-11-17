@@ -99,5 +99,13 @@ namespace DotLink.Infrastructure.Repositories
                 .Where(uf => uf.FolloweeId == userId)
                 .ToListAsync();
         }
+
+        public async Task<List<UserFollow>> GetFollowingsAsync(Guid userId)
+        {
+            return await _context.UserFollows
+                .AsNoTracking()
+                .Where(uf => uf.FollowerId == userId)
+                .ToListAsync();
+        }
     }
 }
