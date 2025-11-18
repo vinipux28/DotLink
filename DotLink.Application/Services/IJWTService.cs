@@ -1,4 +1,4 @@
-﻿using DotLink.Domain.Entities;
+using DotLink.Domain.Entities;
 
 namespace DotLink.Application.Services
 {
