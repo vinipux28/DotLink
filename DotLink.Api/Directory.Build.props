@@ -1,0 +1,13 @@
+<Project>
+  <PropertyGroup>
+    <!-- Enable nullable reference types for all projects in the solution -->
+    <Nullable>enable</Nullable>
+
+    <!-- Use the latest analyzer rules and enforce code style during build -->
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+    <!-- Use the solution-wide ruleset file -->
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)ruleset.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+</Project>

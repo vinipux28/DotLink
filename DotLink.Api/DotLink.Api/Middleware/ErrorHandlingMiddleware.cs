@@ -4,6 +4,7 @@ using System.Net;
 using System.Text.Json;
 using FluentValidation;
 using DotLink.Application.Exceptions;
+using System.Linq;
 
 namespace DotLink.Api.Middleware
 {
@@ -50,16 +51,24 @@ namespace DotLink.Api.Middleware
 
             switch (exception)
             {
-                case DotLinkValidationException validationException:
+                case DotLinkValidationException validationException when validationException.ValidationErrors != null:
                     statusCode = HttpStatusCode.BadRequest; // 400
                     title = "Validation Error";
                     detail = "One or more validation errors occurred.";
                     errors = validationException.ValidationErrors
-                        .GroupBy(e => e.PropertyName)
+                        .Where(e => e != null)
+                        .GroupBy(e => e!.PropertyName ?? string.Empty)
                         .ToDictionary(
                             g => g.Key,
-                            g => g.Select(e => e.ErrorMessage).ToArray()
+                            g => g.Select(e => e!.ErrorMessage ?? string.Empty).ToArray()
                         );
+                    break;
+
+                case DotLinkValidationException validationException:
+                    statusCode = HttpStatusCode.BadRequest; // 400
+                    title = "Validation Error";
+                    detail = "One or more validation errors occurred.";
+                    errors = new Dictionary<string, string[]>();
                     break;
 
                 case DotLinkNotFoundException notFoundException:
