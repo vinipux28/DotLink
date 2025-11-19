@@ -111,9 +111,7 @@ try
 
 
 
-    builder.Services.AddControllers(options =>
-    {
-    });
+    builder.Services.AddControllers();
 
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c =>
