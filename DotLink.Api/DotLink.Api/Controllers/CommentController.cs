@@ -38,7 +38,8 @@ namespace DotLink.Api.Controllers
             _logger.LogDebug("ParentCommentId is {ParentCommentId}", command.ParentCommentId);
 
             Guid commentId = await _mediator.Send(command);
-            return CreatedAtAction(nameof(CreateComment), new { id = commentId }, new { CommentId = commentId });
+            // Return location of the post comments list (client can then retrieve or filter as needed)
+            return CreatedAtAction("GetPostComments", "Post", new { postId = postId }, new { CommentId = commentId });
         }
 
 
@@ -55,7 +56,8 @@ namespace DotLink.Api.Controllers
             command.ParentCommentId = commentId;
 
             Guid replyCommentId = await _mediator.Send(command);
-            return CreatedAtAction(nameof(ReplyToComment), new { id = replyCommentId }, new { CommentId = replyCommentId });
+            // Return location of the post comments list
+            return CreatedAtAction("GetPostComments", "Post", new { postId = postId }, new { CommentId = replyCommentId });
         }
 
         [HttpGet("{parentCommentId:guid}/replies")]
