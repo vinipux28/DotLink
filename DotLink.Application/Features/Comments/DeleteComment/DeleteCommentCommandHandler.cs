@@ -15,10 +15,11 @@ namespace DotLink.Application.Features.Comments.DeleteComment
         private readonly ICommentRepository _commentRepository;
         private readonly IUserRepository _userRepository;
         private readonly ILogger<DeleteCommentCommandHandler> _logger;
-        public DeleteCommentCommandHandler(ICommentRepository commentRepository, ILogger<DeleteCommentCommandHandler> logger)
+        public DeleteCommentCommandHandler(ICommentRepository commentRepository, ILogger<DeleteCommentCommandHandler> logger, IUserRepository userRepository)
         {
             _commentRepository = commentRepository;
             _logger = logger;
+            _userRepository = userRepository;
         }
         public async Task<Unit> Handle(DeleteCommentCommand request, CancellationToken cancellationToken)
         {
