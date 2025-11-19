@@ -30,15 +30,8 @@ namespace DotLink.Api.Controllers
         {
             query.PostId = postId;
 
-            try
-            {
-                var post = await _mediator.Send(query);
-                return Ok(post);
-            }
-            catch (Exception ex)
-            {
-                return NotFound(new { error = ex.Message });
-            }
+            var post = await _mediator.Send(query);
+            return Ok(post);
         }
 
         [HttpPost]
@@ -80,16 +73,9 @@ namespace DotLink.Api.Controllers
             command.UserId = userId;
             command.PostId = postId;
 
-            try
-            {
-                await _mediator.Send(command);
+            await _mediator.Send(command);
 
-                return Ok(new { Message = "Vote cast successfully." });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
+            return Ok(new { Message = "Vote cast successfully." });
         }
 
 
@@ -112,11 +98,6 @@ namespace DotLink.Api.Controllers
             catch (UnauthorizedAccessException)
             {
                 return Forbid();
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("not found")) return NotFound(new { error = ex.Message });
-                return BadRequest(new { error = ex.Message });
             }
         }
 
@@ -142,10 +123,6 @@ namespace DotLink.Api.Controllers
             catch (UnauthorizedAccessException)
             {
                 return Forbid(); // HTTP 403 Forbidden
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
             }
         }
 
