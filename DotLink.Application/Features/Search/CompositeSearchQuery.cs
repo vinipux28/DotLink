@@ -10,5 +10,6 @@ namespace DotLink.Application.Features.Search
     public class CompositeSearchQuery : IRequest<List<SearchResultItem>>
     {
         public string SearchTerm { get; set; } = string.Empty;
+        public Guid? CurrentUserId { get; set; }
     }
 }

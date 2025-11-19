@@ -28,6 +28,10 @@ namespace DotLink.Domain.Entities
         public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
         public ICollection<PostVote> Votes { get; private set; } = new List<PostVote>();
 
+        // Follow relationships (many-to-many modeled with a join entity UserFollow)
+        public ICollection<UserFollow> Followers { get; private set; } = new List<UserFollow>();
+        public ICollection<UserFollow> Following { get; private set; } = new List<UserFollow>();
+
         private User() { }
         public User(Guid id, string username, string email, string passwordHash)
         {
@@ -111,6 +115,37 @@ namespace DotLink.Domain.Entities
             this.UpdatedAt = DateTime.UtcNow;
         }
 
+        // Follow management
+        public bool IsFollowing(User other)
+        {
+            if (other == null) throw new ArgumentNullException(nameof(other));
+            return Following.Any(f => f.FolloweeId == other.Id);
+        }
+
+        public void Follow(User other)
+        {
+            if (other == null) throw new ArgumentNullException(nameof(other));
+            if (other.Id == this.Id) throw new InvalidOperationException("Users cannot follow themselves.");
+            if (IsFollowing(other)) return;
+
+            var relation = new UserFollow(this.Id, other.Id);
+            this.Following.Add(relation);
+            other.Followers.Add(relation);
+
+            UpdatedAt = DateTime.UtcNow;
+        }
+
+        public void Unfollow(User other)
+        {
+            if (other == null) throw new ArgumentNullException(nameof(other));
+            var relation = Following.FirstOrDefault(f => f.FolloweeId == other.Id);
+            if (relation == null) return;
+
+            Following.Remove(relation);
+            other.Followers.Remove(relation);
+
+            UpdatedAt = DateTime.UtcNow;
+        }
 
         public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; private set; }

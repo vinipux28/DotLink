@@ -1,6 +1,7 @@
 ﻿using DotLink.Domain.Entities;
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace DotLink.Application.Repositories
 {
@@ -13,5 +14,14 @@ namespace DotLink.Application.Repositories
         Task AddAsync(User user);
         Task UpdateAsync(User user);
         Task<bool> IsUsernameUniqueAsync(string username);
+
+        // Follow/Unfollow operations
+        Task FollowAsync(Guid followerId, Guid followeeId);
+        Task UnfollowAsync(Guid followerId, Guid followeeId);
+        Task<bool> IsFollowingAsync(Guid followerId, Guid followeeId);
+
+        // Retrieve follower relations
+        Task<List<UserFollow>> GetFollowersAsync(Guid userId);
+        Task<List<UserFollow>> GetFollowingsAsync(Guid userId);
     }
 }

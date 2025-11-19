@@ -25,6 +25,7 @@ namespace DotLink.Infrastructure.Services
                 LastName = user.LastName,
                 Bio = user.Bio,
                 ProfilePictureKey = user.ProfilePictureKey,
+                FollowersCount = user.Followers?.Count ?? 0,
                 CreatedAt = user.CreatedAt
             };
         }
@@ -35,7 +36,8 @@ namespace DotLink.Infrastructure.Services
             {
                 Id = user.Id,
                 Username = user.Username,
-                ProfilePictureKey = user.ProfilePictureKey
+                ProfilePictureKey = user.ProfilePictureKey,
+                FollowersCount = user.Followers?.Count ?? 0
             };
         }
 

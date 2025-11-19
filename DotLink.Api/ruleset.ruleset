@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="DotLinkRules" Description="Analyzer rules for DotLink solution" ToolsVersion="16.0">
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
+    <!-- Treat nullable warnings as errors -->
+    <Rule Id="CS8602" Action="Error" />
+    <Rule Id="CS8603" Action="Error" />
+    <Rule Id="CS8604" Action="Error" />
+    <Rule Id="CS8618" Action="Error" />
+  </Rules>
+</RuleSet>

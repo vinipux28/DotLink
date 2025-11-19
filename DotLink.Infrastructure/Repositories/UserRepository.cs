@@ -65,5 +65,47 @@ namespace DotLink.Infrastructure.Repositories
                 .AsNoTracking()
                 .AnyAsync(u => u.Username == username);
         }
+
+        public async Task FollowAsync(Guid followerId, Guid followeeId)
+        {
+            if (followerId == followeeId) return;
+
+            var exists = await _context.UserFollows.FindAsync(followerId, followeeId);
+            if (exists != null) return;
+
+            var relation = new UserFollow(followerId, followeeId);
+            _context.UserFollows.Add(relation);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UnfollowAsync(Guid followerId, Guid followeeId)
+        {
+            var relation = await _context.UserFollows.FindAsync(followerId, followeeId);
+            if (relation == null) return;
+
+            _context.UserFollows.Remove(relation);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> IsFollowingAsync(Guid followerId, Guid followeeId)
+        {
+            return await _context.UserFollows.AnyAsync(uf => uf.FollowerId == followerId && uf.FolloweeId == followeeId);
+        }
+
+        public async Task<List<UserFollow>> GetFollowersAsync(Guid userId)
+        {
+            return await _context.UserFollows
+                .AsNoTracking()
+                .Where(uf => uf.FolloweeId == userId)
+                .ToListAsync();
+        }
+
+        public async Task<List<UserFollow>> GetFollowingsAsync(Guid userId)
+        {
+            return await _context.UserFollows
+                .AsNoTracking()
+                .Where(uf => uf.FollowerId == userId)
+                .ToListAsync();
+        }
     }
 }

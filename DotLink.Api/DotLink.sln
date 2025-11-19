@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.13.35919.96 d17.13
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11206.111 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotLink.Api", "DotLink.Api\DotLink.Api.csproj", "{865B01BD-8C03-4087-A447-C16E60329380}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotLink.Application", "..\DotLink.Application\DotLink.Application.csproj", "{D8211E2F-54CD-4700-9C94-920BA2753088}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotLink.Infrastructure", "..\DotLink.Infrastructure\DotLink.Infrastructure.csproj", "{B75EC372-56B4-4410-BA5B-414AA72CE995}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotLink.Tests", "..\tests\DotLink.Tests\DotLink.Tests.csproj", "{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,9 +73,24 @@ Global
 		{B75EC372-56B4-4410-BA5B-414AA72CE995}.Release|x64.Build.0 = Release|Any CPU
 		{B75EC372-56B4-4410-BA5B-414AA72CE995}.Release|x86.ActiveCfg = Release|Any CPU
 		{B75EC372-56B4-4410-BA5B-414AA72CE995}.Release|x86.Build.0 = Release|Any CPU
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}.Debug|x64.Build.0 = Debug|Any CPU
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}.Debug|x86.Build.0 = Debug|Any CPU
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}.Release|x64.ActiveCfg = Release|Any CPU
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}.Release|x64.Build.0 = Release|Any CPU
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}.Release|x86.ActiveCfg = Release|Any CPU
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2FDEADA5-3049-69FE-49B9-7DC1073E08C5} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7448C93-DD41-461C-B92E-7A30CB0EDDEE}

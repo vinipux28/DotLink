@@ -12,6 +12,7 @@ namespace DotLink.Application.DTOs
         public Guid Id { get; set; }
         public string Username { get; set; }
         public string? ProfilePictureKey { get; set; }
+        public int FollowersCount { get; set; }
 
 
         public UserDTOPartial()
