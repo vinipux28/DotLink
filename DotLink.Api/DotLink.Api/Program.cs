@@ -99,7 +99,8 @@ try
     builder.Services.AddTransient<IDTOMapperService, DTOMapperService>();
 
 
-    builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IPostRepository).Assembly));
+    // Register MediatR handlers from the application features assembly (where commands/handlers live)
+    builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly));
 
     builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserCommand).Assembly);
 
