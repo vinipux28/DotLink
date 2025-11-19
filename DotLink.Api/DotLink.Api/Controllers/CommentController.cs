@@ -36,15 +36,9 @@ namespace DotLink.Api.Controllers
             command.PostId = postId;
 
             _logger.LogDebug("ParentCommentId is {ParentCommentId}", command.ParentCommentId);
-            try
-            {
-                Guid commentId = await _mediator.Send(command);
-                return CreatedAtAction(nameof(CreateComment), new { id = commentId }, new { CommentId = commentId });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
+
+            Guid commentId = await _mediator.Send(command);
+            return CreatedAtAction(nameof(CreateComment), new { id = commentId }, new { CommentId = commentId });
         }
 
 
@@ -59,15 +53,9 @@ namespace DotLink.Api.Controllers
             command.UserId = userId;
             command.PostId = postId;
             command.ParentCommentId = commentId;
-            try
-            {
-                Guid replyCommentId = await _mediator.Send(command);
-                return CreatedAtAction(nameof(ReplyToComment), new { id = replyCommentId }, new { CommentId = replyCommentId });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
+
+            Guid replyCommentId = await _mediator.Send(command);
+            return CreatedAtAction(nameof(ReplyToComment), new { id = replyCommentId }, new { CommentId = replyCommentId });
         }
 
         [HttpGet("{parentCommentId:guid}/replies")]
@@ -101,15 +89,8 @@ namespace DotLink.Api.Controllers
             }
             
             command.CommentId = commentId;
-            try
-            {
-                await _mediator.Send(command);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
+            await _mediator.Send(command);
+            return NoContent();
         }
 
         [HttpDelete("{commentId:guid}")]
@@ -125,15 +106,9 @@ namespace DotLink.Api.Controllers
             {
                 CommentId = commentId
             };
-            try
-            {
-                await _mediator.Send(command);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
+
+            await _mediator.Send(command);
+            return NoContent();
         }
     }
 }
