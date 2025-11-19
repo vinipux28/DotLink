@@ -28,17 +28,10 @@ namespace DotLink.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                Guid userId = await _mediator.Send(command);
+            Guid userId = await _mediator.Send(command);
 
-                // Return location of the newly created user resource (GET api/user/{id})
-                return CreatedAtAction("GetUserById", "User", new { id = userId }, new { UserId = userId });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(new { error = ex.Message });
-            }
+            // Return location of the newly created user resource (GET api/user/{id})
+            return CreatedAtAction("GetUserById", "User", new { id = userId }, new { UserId = userId });
         }
 
         [HttpPost("login")]
@@ -49,16 +42,9 @@ namespace DotLink.Api.Controllers
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                string token = await _mediator.Send(command);
+            string token = await _mediator.Send(command);
 
-                return Ok(new { token = token });
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(new { error = ex.Message });
-            }
+            return Ok(new { token = token });
         }
 
 
