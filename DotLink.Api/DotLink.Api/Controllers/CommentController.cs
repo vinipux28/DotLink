@@ -99,7 +99,8 @@ namespace DotLink.Api.Controllers
 
             var command = new DeleteCommentCommand
             {
-                CommentId = commentId
+                CommentId = commentId,
+                UserId = userId
             };
 
             await _mediator.Send(command, cancellationToken);

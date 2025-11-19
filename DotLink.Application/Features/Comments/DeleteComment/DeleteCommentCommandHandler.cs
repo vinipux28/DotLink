@@ -13,6 +13,7 @@ namespace DotLink.Application.Features.Comments.DeleteComment
     public class DeleteCommentCommandHandler : IRequestHandler<DeleteCommentCommand, Unit>
     {
         private readonly ICommentRepository _commentRepository;
+        private readonly IUserRepository _userRepository;
         private readonly ILogger<DeleteCommentCommandHandler> _logger;
         public DeleteCommentCommandHandler(ICommentRepository commentRepository, ILogger<DeleteCommentCommandHandler> logger)
         {
@@ -26,6 +27,19 @@ namespace DotLink.Application.Features.Comments.DeleteComment
             {
                 _logger.LogWarning("Attempt to delete non-existing comment {CommentId}", request.CommentId);
                 throw new DotLinkNotFoundException("Comment", request.CommentId);
+            }
+
+            var user = await _userRepository.GetByIdAsync(request.UserId);
+
+            if (user is null) {
+                _logger.LogWarning("User with ID: {UserId} not found when attempting to delete comment.", request.UserId);
+                throw new DotLinkUnauthorizedAccessException("User not found.");
+            }
+
+            if (comment.AuthorId == user.Id)
+            {
+                _logger.LogWarning("User with ID: {UserId} attempted to delete comment with ID: {CommentId} without permission.", request.UserId, request.CommentId);
+                throw new DotLinkUnauthorizedAccessException("You do not have permission to delete this comment.");
             }
 
             await _commentRepository.DeleteAsync(comment);
