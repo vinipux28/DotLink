@@ -93,10 +93,10 @@ namespace DotLink.Api.Controllers
                 return BadRequest(new { error = "File size exceeds 5MB limit." });
             }
 
-            var allowedTypes = new[] { "image/jpeg", "image/png" };
+            var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif" };
             if (!allowedTypes.Contains(file.ContentType))
             {
-                return BadRequest(new { error = "Only JPEG and PNG images are allowed." });
+                return BadRequest(new { error = "Only JPEG, PNG and GIF images are allowed." });
             }
 
             using var fileStream = file.OpenReadStream();
