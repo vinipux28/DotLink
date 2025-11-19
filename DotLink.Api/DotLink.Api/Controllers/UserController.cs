@@ -115,6 +115,7 @@ namespace DotLink.Api.Controllers
         }
 
 
+        [Authorize]
         [HttpDelete("profilePicture")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> RemoveProfilePicture()
