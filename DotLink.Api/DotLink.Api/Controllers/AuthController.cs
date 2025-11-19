@@ -32,7 +32,8 @@ namespace DotLink.Api.Controllers
             {
                 Guid userId = await _mediator.Send(command);
 
-                return CreatedAtAction(nameof(Register), new { id = userId }, new { UserId = userId });
+                // Return location of the newly created user resource (GET api/user/{id})
+                return CreatedAtAction("GetUserById", "User", new { id = userId }, new { UserId = userId });
             }
             catch (InvalidOperationException ex)
             {
