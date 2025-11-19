@@ -5,7 +5,6 @@ using DotLink.Application.Features.Comments.UpdateComment;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 
@@ -24,7 +23,6 @@ namespace DotLink.Api.Controllers
             _logger = logger;
         }
 
-        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateComment(Guid postId, [FromBody] CreateCommentCommand command)
         {
@@ -50,7 +48,6 @@ namespace DotLink.Api.Controllers
         }
 
 
-        [Authorize]
         [HttpPost("{commentId:guid}/reply")]
         public async Task<IActionResult> ReplyToComment(Guid postId, Guid commentId, [FromBody] CreateCommentCommand command)
         {
@@ -93,7 +90,6 @@ namespace DotLink.Api.Controllers
         }
 
 
-        [Authorize]
         [HttpPut("{commentId:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> UpdateComment(Guid commentId, [FromBody] UpdateCommentCommand command)
@@ -116,7 +112,6 @@ namespace DotLink.Api.Controllers
             }
         }
 
-        [Authorize]
         [HttpDelete("{commentId:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> DeleteComment(Guid commentId)
