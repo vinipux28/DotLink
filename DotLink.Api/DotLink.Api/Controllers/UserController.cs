@@ -12,6 +12,7 @@ using DotLink.Application.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace DotLink.Api.Controllers
 {
@@ -22,6 +23,7 @@ namespace DotLink.Api.Controllers
         private readonly IMediator _mediator;
         private readonly IUserRepository _userRepository;
         private readonly IDTOMapperService _mapperService;
+
         public UserController(IMediator mediator, IUserRepository userRepository, IDTOMapperService mapperService)
         {
             _mediator = mediator;
@@ -30,74 +32,60 @@ namespace DotLink.Api.Controllers
         }
 
         [HttpGet("{id:guid}")]
+        [ProducesResponseType(typeof(UserDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             var user = await _userRepository.GetByIdAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            return Ok(_mapperService.MapToUserDTO(user));
+            return user == null ? NotFound() : Ok(_mapperService.MapToUserDTO(user));
         }
 
         [Authorize]
         [HttpGet("me")]
+        [ProducesResponseType(typeof(UserDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetCurrentUser()
         {
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
             var user = await _userRepository.GetByIdAsync(userId);
-            if (user is null)
-            {
-                return NotFound();
-            }
-            return Ok(_mapperService.MapToUserDTO(user));
+            return user == null ? NotFound() : Ok(_mapperService.MapToUserDTO(user));
         }
-
 
         [Authorize]
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserProfileCommand command)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserProfileCommand command, CancellationToken cancellationToken)
         {
-            if (!Guid.TryParse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value, out Guid userId))
-            {
-                return Unauthorized();
-            }
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
             command.UserId = userId;
-
-            await _mediator.Send(command);
+            await _mediator.Send(command, cancellationToken);
             return NoContent();
         }
 
         [Authorize]
         [HttpPost("profilePicture")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadProfilePicture([FromForm] UploadFileRequest request)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> UploadProfilePicture([FromForm] UploadFileRequest request, CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
             var file = request.File;
-
             if (file == null || file.Length == 0)
-            {
                 return BadRequest(new { error = "No file provided." });
-            }
 
-            const int MaxFileSize = 5 * 1024 * 1024;
-            if (file.Length > MaxFileSize)
-            {
+            if (file.Length > 5 * 1024 * 1024)
                 return BadRequest(new { error = "File size exceeds 5MB limit." });
-            }
 
             var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif" };
             if (!allowedTypes.Contains(file.ContentType))
-            {
                 return BadRequest(new { error = "Only JPEG, PNG and GIF images are allowed." });
-            }
 
             using var fileStream = file.OpenReadStream();
 
@@ -109,96 +97,79 @@ namespace DotLink.Api.Controllers
                 ProfilePictureContentType = file.ContentType
             };
 
-            var newKey = await _mediator.Send(command);
-
+            var newKey = await _mediator.Send(command, cancellationToken);
             return Ok(new { profilePictureKey = newKey });
         }
-
 
         [Authorize]
         [HttpDelete("profilePicture")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> RemoveProfilePicture()
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> RemoveProfilePicture(CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
-            var command = new RemoveProfilePictureCommand { UserId = userId };
-
-            await _mediator.Send(command);
-
+            await _mediator.Send(new RemoveProfilePictureCommand { UserId = userId }, cancellationToken);
             return NoContent();
         }
 
         [Authorize]
         [HttpPost("{id:guid}/follow")]
-        public async Task<IActionResult> Follow(Guid id)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Follow(Guid id, CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
-            var command = new FollowUserCommand
-            {
-                FollowerId = userId,
-                FolloweeId = id
-            };
-
-            await _mediator.Send(command);
-
+            await _mediator.Send(new FollowUserCommand { FollowerId = userId, FolloweeId = id }, cancellationToken);
             return NoContent();
         }
 
         [Authorize]
         [HttpPost("{id:guid}/unfollow")]
-        public async Task<IActionResult> Unfollow(Guid id)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Unfollow(Guid id, CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
-            var command = new UnfollowUserCommand
-            {
-                FollowerId = userId,
-                FolloweeId = id
-            };
-
-            await _mediator.Send(command);
-
+            await _mediator.Send(new UnfollowUserCommand { FollowerId = userId, FolloweeId = id }, cancellationToken);
             return NoContent();
         }
 
-        // Get followers of a user
         [HttpGet("{id:guid}/followers")]
-        public async Task<IActionResult> GetFollowers(Guid id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetFollowers(Guid id, CancellationToken cancellationToken)
         {
-            var query = new GetFollowersQuery { UserId = id };
-            var followers = await _mediator.Send(query);
+            var followers = await _mediator.Send(new GetFollowersQuery { UserId = id }, cancellationToken);
             return Ok(followers);
         }
 
-        // Get followings of a user
         [HttpGet("{id:guid}/followings")]
-        public async Task<IActionResult> GetFollowings(Guid id)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetFollowings(Guid id, CancellationToken cancellationToken)
         {
-            var query = new GetFollowingsQuery { UserId = id };
-            var followings = await _mediator.Send(query);
+            var followings = await _mediator.Send(new GetFollowingsQuery { UserId = id }, cancellationToken);
             return Ok(followings);
         }
 
-
+        [Authorize]
         [HttpPut("password")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [Authorize]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command, CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
             command.UserId = userId;
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
+        }
 
-            await _mediator.Send(command);
-
-            return NoContent(); // 204 No Content
+        private bool TryGetUserId(out Guid userId)
+        {
+            var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return Guid.TryParse(claim, out userId);
         }
     }
 }

@@ -2,7 +2,6 @@
 using DotLink.Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Net.Mime;
-using System.IO;
 
 namespace DotLink.Api.Controllers
 {
@@ -19,20 +18,17 @@ namespace DotLink.Api.Controllers
         }
 
         [HttpGet("{**fileKey}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetFile(string fileKey)
         {
-            if (string.IsNullOrWhiteSpace(fileKey))
-            {
-                return BadRequest("File key cannot be empty.");
-            }
+            if (string.IsNullOrWhiteSpace(fileKey)) return BadRequest("File key cannot be empty.");
 
             try
             {
                 var fileStream = await _fileStorageService.GetFileStreamAsync(fileKey);
-
-                var contentType = GetContentType(fileKey);
-
-                return File(fileStream, contentType);
+                return File(fileStream, GetContentType(fileKey));
             }
             catch (FileNotFoundException ex)
             {
@@ -40,8 +36,7 @@ namespace DotLink.Api.Controllers
             }
         }
 
-
-        private string GetContentType(string fileKey)
+        private static string GetContentType(string fileKey)
         {
             var extension = Path.GetExtension(fileKey)?.ToLowerInvariant();
             return extension switch
@@ -49,6 +44,7 @@ namespace DotLink.Api.Controllers
                 ".png" => "image/png",
                 ".gif" => "image/gif",
                 ".jpg" or ".jpeg" => "image/jpeg",
+                ".pdf" => "application/pdf",
                 _ => MediaTypeNames.Application.Octet,
             };
         }
