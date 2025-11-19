@@ -38,10 +38,6 @@ namespace DotLink.Api.Controllers
             {
                 return NotFound($"Filename: {ex.FileName}");
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Error retrieving file.");
-            }
         }
 
 
