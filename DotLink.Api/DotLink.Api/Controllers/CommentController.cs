@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
+using Microsoft.Extensions.Logging;
 
 namespace DotLink.Api.Controllers
 {
@@ -16,9 +17,11 @@ namespace DotLink.Api.Controllers
     public class CommentController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public CommentController(IMediator mediator)
+        private readonly ILogger<CommentController> _logger;
+        public CommentController(IMediator mediator, ILogger<CommentController> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
 
         [Authorize]
@@ -34,7 +37,7 @@ namespace DotLink.Api.Controllers
             command.UserId = userId;
             command.PostId = postId;
 
-            Console.WriteLine($"ParentCommentId is {command.ParentCommentId}");
+            _logger.LogDebug("ParentCommentId is {ParentCommentId}", command.ParentCommentId);
             try
             {
                 Guid commentId = await _mediator.Send(command);
