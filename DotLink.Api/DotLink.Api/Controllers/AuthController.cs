@@ -3,7 +3,9 @@ using DotLink.Application.Features.Users.LoginUser;
 using DotLink.Application.Features.Users.RegisterUser;
 using DotLink.Application.Features.Users.ResetPassword;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotLink.Api.Controllers
@@ -19,67 +21,41 @@ namespace DotLink.Api.Controllers
             _mediator = mediator;
         }
 
-
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUserCommand command)
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Register([FromBody] RegisterUserCommand command, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            try
-            {
-                Guid userId = await _mediator.Send(command);
-
-                return CreatedAtAction(nameof(Register), new { id = userId }, new { UserId = userId });
-            }
-            catch (InvalidOperationException ex)
-            {
-                return Conflict(new { error = ex.Message });
-            }
+            var userId = await _mediator.Send(command, cancellationToken);
+            return CreatedAtAction("GetUserById", "User", new { id = userId }, new { UserId = userId });
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginUserCommand command)
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> Login([FromBody] LoginUserCommand command, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            try
-            {
-                string token = await _mediator.Send(command);
-
-                return Ok(new { token = token });
-            }
-            catch (UnauthorizedAccessException ex)
-            {
-                return Unauthorized(new { error = ex.Message });
-            }
+            var token = await _mediator.Send(command, cancellationToken);
+            return Ok(new { token });
         }
-
 
         [HttpPost("forgot-password")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command, CancellationToken cancellationToken)
         {
-            await _mediator.Send(command);
-
+            await _mediator.Send(command, cancellationToken);
             return Ok(new { Message = "If account exists, a password reset link has been sent to the email." });
         }
-
 
         [HttpPost("reset-password")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command, CancellationToken cancellationToken)
         {
-            await _mediator.Send(command);
-
-            return NoContent(); // 204 No Content
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
         }
-
     }
 }

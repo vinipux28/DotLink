@@ -5,7 +5,6 @@ using DotLink.Application.Features.Comments.UpdateComment;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 
 namespace DotLink.Api.Controllers
@@ -16,66 +15,56 @@ namespace DotLink.Api.Controllers
     public class CommentController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public CommentController(IMediator mediator)
+        private readonly ILogger<CommentController> _logger;
+
+        public CommentController(IMediator mediator, ILogger<CommentController> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
 
-        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> CreateComment(Guid postId, [FromBody] CreateCommentCommand command)
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreateComment(Guid postId, [FromBody] CreateCommentCommand command, CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId))
-            {
-                return Unauthorized();
-            }
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
             command.UserId = userId;
             command.PostId = postId;
 
-            Console.WriteLine($"ParentCommentId is {command.ParentCommentId}");
-            try
-            {
-                Guid commentId = await _mediator.Send(command);
-                return CreatedAtAction(nameof(CreateComment), new { id = commentId }, new { CommentId = commentId });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
+            _logger.LogDebug("ParentCommentId is {ParentCommentId}", command.ParentCommentId);
+
+            var commentId = await _mediator.Send(command, cancellationToken);
+
+            return CreatedAtAction("GetPostComments", "Post", new { postId }, new { CommentId = commentId });
         }
 
-
-        [Authorize]
         [HttpPost("{commentId:guid}/reply")]
-        public async Task<IActionResult> ReplyToComment(Guid postId, Guid commentId, [FromBody] CreateCommentCommand command)
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> ReplyToComment(Guid postId, Guid commentId, [FromBody] CreateCommentCommand command, CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId))
-            {
-                return Unauthorized();
-            }
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+
             command.UserId = userId;
             command.PostId = postId;
             command.ParentCommentId = commentId;
-            try
-            {
-                Guid replyCommentId = await _mediator.Send(command);
-                return CreatedAtAction(nameof(ReplyToComment), new { id = replyCommentId }, new { CommentId = replyCommentId });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
+
+            var replyCommentId = await _mediator.Send(command, cancellationToken);
+
+            return CreatedAtAction("GetPostComments", "Post", new { postId }, new { CommentId = replyCommentId });
         }
 
         [HttpGet("{parentCommentId:guid}/replies")]
         [AllowAnonymous]
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCommentReplies(
             Guid parentCommentId,
             [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
+            [FromQuery] int pageSize = 10,
+            CancellationToken cancellationToken = default)
         {
             var query = new GetCommentRepliesQuery
             {
@@ -84,58 +73,44 @@ namespace DotLink.Api.Controllers
                 PageSize = pageSize
             };
 
-            var result = await _mediator.Send(query);
-
+            var result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
         }
 
-
-        [Authorize]
         [HttpPut("{commentId:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> UpdateComment(Guid commentId, [FromBody] UpdateCommentCommand command)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> UpdateComment(Guid commentId, [FromBody] UpdateCommentCommand command, CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ;
-            if (!Guid.TryParse(userIdClaim, out Guid userId))
-            {
-                return Unauthorized();
-            }
-            
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+
             command.CommentId = commentId;
-            try
-            {
-                await _mediator.Send(command);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
+
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
         }
 
-        [Authorize]
         [HttpDelete("{commentId:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> DeleteComment(Guid commentId)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> DeleteComment(Guid commentId, CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId))
-            {
-                return Unauthorized();
-            }
+            if (!TryGetUserId(out var userId)) return Unauthorized();
+
             var command = new DeleteCommentCommand
             {
-                CommentId = commentId
+                CommentId = commentId,
+                UserId = userId
             };
-            try
-            {
-                await _mediator.Send(command);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
+
+            await _mediator.Send(command, cancellationToken);
+            return NoContent();
+        }
+
+        private bool TryGetUserId(out Guid userId)
+        {
+            var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return Guid.TryParse(claim, out userId);
         }
     }
 }

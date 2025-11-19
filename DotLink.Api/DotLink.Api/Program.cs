@@ -45,7 +45,8 @@ try
         var storageSettings = builder.Configuration.GetSection("StorageSettings");
         var relativePathSegment = storageSettings["LocalStoragePath"] ?? "uploads";
 
-        var localStorageRoot = env.WebRootPath;
+        // Prefer WebRootPath, fallback to ContentRootPath, then current directory
+        var localStorageRoot = env.WebRootPath ?? env.ContentRootPath ?? Directory.GetCurrentDirectory();
 
         var localStoragePath = Path.Combine(localStorageRoot, relativePathSegment);
 
@@ -59,7 +60,8 @@ try
 
 
     var jwtSettings = builder.Configuration.GetSection("Jwt");
-    var key = Encoding.ASCII.GetBytes(jwtSettings["Key"]!);
+    // Use UTF8 to properly encode secrets containing non-ASCII characters
+    var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
     builder.Services.AddAuthentication(options =>
     {
@@ -99,7 +101,8 @@ try
     builder.Services.AddTransient<IDTOMapperService, DTOMapperService>();
 
 
-    builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(IPostRepository).Assembly));
+    // Register MediatR handlers from the application features assembly (where commands/handlers live)
+    builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(RegisterUserCommand).Assembly));
 
     builder.Services.AddValidatorsFromAssembly(typeof(RegisterUserCommand).Assembly);
 
@@ -108,9 +111,7 @@ try
 
 
 
-    builder.Services.AddControllers(options =>
-    {
-    });
+    builder.Services.AddControllers();
 
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c =>

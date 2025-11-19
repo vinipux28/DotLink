@@ -8,7 +8,6 @@ using DotLink.Application.Features.Posts.GetRecentPosts;
 using DotLink.Application.Features.Posts.CastVote;
 using DotLink.Application.Features.Posts.UpdatePost;
 using DotLink.Application.Features.Posts.DeletePost;
-using DotLink.Application.Features.Comments.CreateComment;
 using DotLink.Application.Features.Comments.GetCommentsForPost;
 
 namespace DotLink.Api.Controllers
@@ -26,107 +25,80 @@ namespace DotLink.Api.Controllers
         }
 
         [HttpGet("{postId:guid}")]
-        public async Task<IActionResult> GetPostById(Guid postId, [FromQuery] GetPostByIdQuery query)
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetPostById(Guid postId, [FromQuery] GetPostByIdQuery query, CancellationToken cancellationToken)
         {
             query.PostId = postId;
-
-            try
-            {
-                var post = await _mediator.Send(query);
-                return Ok(post);
-            }
-            catch (Exception ex)
-            {
-                return NotFound(new { error = ex.Message });
-            }
+            var post = await _mediator.Send(query, cancellationToken);
+            return Ok(post);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePost([FromBody] CreatePostCommand command)
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CreatePost([FromBody] CreatePostCommand command, CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !Guid.TryParse(userIdClaim, out Guid userId))
-            {
-                return Unauthorized();
-            }
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
             command.UserId = userId;
+            var postId = await _mediator.Send(command, cancellationToken);
 
-            Guid postId = await _mediator.Send(command);
-
-            return CreatedAtAction(nameof(GetPostById), new { postId = postId }, new { PostId = postId });
+            return CreatedAtAction(nameof(GetPostById), new { postId }, new { PostId = postId });
         }
 
         [AllowAnonymous]
         [HttpGet("recent")]
-        public async Task<IActionResult> GetRecentPosts([FromQuery] GetRecentPostsQuery query)
+        [ProducesResponseType(typeof(IEnumerable<object>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetRecentPosts([FromQuery] GetRecentPostsQuery query, CancellationToken cancellationToken)
         {
-            var posts = await _mediator.Send(query);
-
+            var posts = await _mediator.Send(query, cancellationToken);
             return Ok(posts);
         }
 
-
-        [Authorize]
         [HttpPost("vote/{postId:guid}")]
-        public async Task<IActionResult> CastVote(Guid postId, [FromBody] CastVoteCommand command)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> CastVote(Guid postId, [FromBody] CastVoteCommand command, CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId))
-            {
-                return Unauthorized();
-            }
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
             command.UserId = userId;
             command.PostId = postId;
 
-            try
-            {
-                await _mediator.Send(command);
-
-                return Ok(new { Message = "Vote cast successfully." });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
-            }
+            await _mediator.Send(command, cancellationToken);
+            return Ok(new { Message = "Vote cast successfully." });
         }
 
-
-        [Authorize]
         [HttpPut("{postId:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> UpdatePost(Guid postId, [FromBody] UpdatePostCommand command)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> UpdatePost(Guid postId, [FromBody] UpdatePostCommand command, CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
             command.PostId = postId;
             command.UserId = userId;
 
             try
             {
-                await _mediator.Send(command);
+                await _mediator.Send(command, cancellationToken);
                 return NoContent();
             }
             catch (UnauthorizedAccessException)
             {
                 return Forbid();
             }
-            catch (Exception ex)
-            {
-                if (ex.Message.Contains("not found")) return NotFound(new { error = ex.Message });
-                return BadRequest(new { error = ex.Message });
-            }
         }
 
-        [Authorize]
         [HttpDelete("{postId:guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> DeletePost(Guid postId)
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> DeletePost(Guid postId, CancellationToken cancellationToken)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (!Guid.TryParse(userIdClaim, out Guid userId)) return Unauthorized();
+            if (!TryGetUserId(out var userId)) return Unauthorized();
 
             var command = new DeletePostCommand
             {
@@ -136,26 +108,19 @@ namespace DotLink.Api.Controllers
 
             try
             {
-                await _mediator.Send(command);
-                return NoContent(); // HTTP 204 No Content
+                await _mediator.Send(command, cancellationToken);
+                return NoContent();
             }
             catch (UnauthorizedAccessException)
             {
-                return Forbid(); // HTTP 403 Forbidden
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { error = ex.Message });
+                return Forbid();
             }
         }
 
-
         [HttpGet("{postId:guid}/comments")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetPostComments(
-        Guid postId,
-        [FromQuery] int pageNumber = 1,
-        [FromQuery] int pageSize = 20)
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetPostComments(Guid postId, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
         {
             var query = new GetCommentsForPostQuery
             {
@@ -163,9 +128,14 @@ namespace DotLink.Api.Controllers
                 PageNumber = pageNumber,
                 PageSize = pageSize
             };
-            var result = await _mediator.Send(query);
-
+            var result = await _mediator.Send(query, cancellationToken);
             return Ok(result);
+        }
+
+        private bool TryGetUserId(out Guid userId)
+        {
+            var claim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return Guid.TryParse(claim, out userId);
         }
     }
 }

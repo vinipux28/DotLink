@@ -9,16 +9,17 @@ namespace DotLink.Api.Controllers
     public class SearchController : ControllerBase
     {
         private readonly IMediator _mediator;
+
         public SearchController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Search([FromQuery] CompositeSearchQuery query)
+        [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Search([FromQuery] CompositeSearchQuery query, CancellationToken cancellationToken)
         {
-            var results = await _mediator.Send(query);
+            var results = await _mediator.Send(query, cancellationToken);
             return Ok(results);
         }
     }

@@ -78,8 +78,9 @@ namespace DotLink.Api.Middleware
                     break;
 
                 case DotLinkUnauthorizedAccessException unauthorizedAccessException:
-                    statusCode = HttpStatusCode.Forbidden; // 403
-                    title = "Access Denied";
+                    // Map to 401 Unauthorized for authentication failures (e.g., invalid credentials)
+                    statusCode = HttpStatusCode.Unauthorized; // 401
+                    title = "Unauthorized";
                     detail = unauthorizedAccessException.Message;
                     break;
 
