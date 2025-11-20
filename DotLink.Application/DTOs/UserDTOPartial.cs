@@ -15,7 +15,6 @@ namespace DotLink.Application.DTOs
         public int FollowersCount { get; set; }
 
 
-        public UserDTOPartial()
-        {}
+        public UserDTOPartial(){}
     }
 }
